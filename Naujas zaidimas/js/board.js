@@ -181,7 +181,6 @@ function createBoard() {
         } else {
             cell.className = 'cell horizontal-cell';
             
-            // Pridedame ilgo teksto klasę
             if (cellData.name && cellData.name.length > 15) {
                 cell.classList.add('long-text');
             }
@@ -330,7 +329,6 @@ function createBoard() {
         const cell = document.createElement('div');
         cell.className = 'cell vertical-cell';
         
-        // Pridedame ilgo teksto klasę
         if (cellData.name && cellData.name.length > 15) {
             cell.classList.add('long-text');
         }
@@ -503,7 +501,7 @@ function createBoard() {
     normalSizeBtn.onclick = () => exitFullscreen();
     normalSizeRow.appendChild(normalSizeBtn);
     
-    // BANKROTO MYGTUKAS (pataisytas be confirm)
+    // BANKROTO MYGTUKAS (rodomas TIK kai tavo eilė)
     const bankruptRow = document.createElement('div');
     bankruptRow.style.display = 'flex';
     bankruptRow.style.justifyContent = 'center';
@@ -513,6 +511,14 @@ function createBoard() {
     bankruptBigBtn.id = 'bankruptBigBtn';
     bankruptBigBtn.innerHTML = '💀 BANKROTAS 💀';
     bankruptBigBtn.style.cssText = `background:#8b0000; color:#ffd700; border:2px solid #ffd700; border-radius:40px; padding:8px 20px; font-size:14px; font-weight:bold; cursor:pointer; transition:0.2s;`;
+    
+    // Tikriname ar einamasis žaidėjas yra vietinis
+    const localPlayerIdForBankrupt = typeof getLocalPlayerId === 'function' ? getLocalPlayerId() : -1;
+    const isMyTurnForBankrupt = (currentPlayerIndex === localPlayerIdForBankrupt);
+    
+    if (!isMyTurnForBankrupt) {
+        bankruptBigBtn.style.display = 'none';
+    }
     
     bankruptBigBtn.onclick = () => {
         const p = players[currentPlayerIndex];
@@ -594,7 +600,6 @@ function createBoard() {
         const cell = document.createElement('div');
         cell.className = 'cell vertical-cell';
         
-        // Pridedame ilgo teksto klasę
         if (cellData.name && cellData.name.length > 15) {
             cell.classList.add('long-text');
         }
@@ -647,7 +652,6 @@ function createBoard() {
         } else {
             cell.className = 'cell horizontal-cell';
             
-            // Pridedame ilgo teksto klasę
             if (cellData.name && cellData.name.length > 15) {
                 cell.classList.add('long-text');
             }
