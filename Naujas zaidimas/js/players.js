@@ -38,181 +38,173 @@ function createFloatingCards() {
     }
     container.innerHTML = '';
     
-    for (let i = 0; i < activePlayers; i++) {
-        const player = players[i];
-        if (!player) continue;
-        
-        const playerCard = document.createElement('div');
-        playerCard.className = `player-card ${i === currentPlayerIndex ? 'active' : ''}`;
-        playerCard.dataset.playerId = i;
-        playerCard.setAttribute('draggable', 'false');
-        
-        const savedSize = localStorage.getItem(`cardSize_${i}`);
-        if (savedSize) {
-            const size = JSON.parse(savedSize);
-            playerCard.style.width = size.width + 'px';
-        } else {
-            playerCard.style.width = '260px';
-        }
-        
-        playerCard.style.position = 'absolute';
-        playerCard.style.left = (player.x || 100) + 'px';
-        playerCard.style.top = (player.y || 200 + (i * 120)) + 'px';
-        playerCard.style.cursor = 'default';
-        playerCard.style.zIndex = '1000';
-        playerCard.style.userSelect = 'none';
-        
-        // BANKRUTAVUSIO ŽAIDĖJO KORTELĖ
-        if (player.bankrupt) {
-            playerCard.classList.add('bankrupt-card');
-            playerCard.innerHTML = `
-                <div class="card-controls">
-                    <button class="card-drag-btn" data-card-id="${i}" title="Tempti / Keisti dydį">✋</button>
-                    <button class="card-trade-btn" data-card-id="${i}" title="Prekyba" disabled style="opacity:0.5;">🔄</button>
+    // Gauname vietinio žaidėjo ID
+    const localPlayerId = getLocalPlayerId();
+    if (localPlayerId === -1) {
+        console.error("❌ Nepavyko nustatyti vietinio žaidėjo!");
+        return;
+    }
+    
+    const player = players[localPlayerId];
+    if (!player || player.bankrupt) return;
+    
+    const playerCard = document.createElement('div');
+    playerCard.className = `player-card ${localPlayerId === currentPlayerIndex ? 'active' : ''}`;
+    playerCard.dataset.playerId = localPlayerId;
+    playerCard.setAttribute('draggable', 'false');
+    
+    const savedSize = localStorage.getItem(`cardSize_${localPlayerId}`);
+    if (savedSize) {
+        const size = JSON.parse(savedSize);
+        playerCard.style.width = size.width + 'px';
+    } else {
+        playerCard.style.width = '260px';
+    }
+    
+    playerCard.style.position = 'absolute';
+    playerCard.style.left = (player.x || 100) + 'px';
+    playerCard.style.top = (player.y || 200 + (localPlayerId * 120)) + 'px';
+    playerCard.style.cursor = 'default';
+    playerCard.style.zIndex = '1000';
+    playerCard.style.userSelect = 'none';
+    
+    let jailStatusHtml = '';
+    if (inJail[localPlayerId] && !player.bankrupt) {
+        jailStatusHtml = `<div class="player-jail-status">🚔 KALĖJIME (${jailTurns[localPlayerId] || 0}/3)</div>`;
+    }
+    
+    let debtIndicatorHtml = '';
+    if (window.currentDebt && currentPlayerIndex === localPlayerId) {
+        debtIndicatorHtml = `<div class="player-debt-indicator">⚠️ SKOLA: <span style="color:#ff6666">-${window.currentDebt}€</span></div>`;
+    }
+    
+    // MINI KORTELĖS (NUOSAVYBĖS)
+    let propertiesHtml = '<div class="player-properties-title">🏠 Nuosavybės:</div>';
+    propertiesHtml += '<div class="properties-mini-grid">';
+    
+    if (player.properties && player.properties.length > 0) {
+        const sortedProperties = sortPropertiesByPriceAndColor(player.properties, player);
+        sortedProperties.forEach(prop => {
+            const cellData = getCellById(prop.id);
+            if (!cellData) return;
+            
+            let colorIcon = '📌';
+            let colorClass = '';
+            if (cellData.color) {
+                const colors = { 
+                    'brown': '🟤', 'lightblue': '🔵', 'orange': '🟠', 
+                    'yellow': '🟡', 'red': '🔴', 'purple': '🟣', 
+                    'bronze': '🥉', 'butelka': '🍾', 'lime': '🟢', 
+                    'brightblue': '💙' 
+                };
+                colorIcon = colors[cellData.color] || '📌';
+                colorClass = `prop-color-${cellData.color}`;
+            }
+            const houses = player.houses[prop.id] || 0;
+            const houseIcon = houses === 5 ? '🏨' : houses > 0 ? '🏠'.repeat(houses) : '';
+            const isPledged = player.pledgedProperties && player.pledgedProperties.some(p => p.id === prop.id);
+            
+            propertiesHtml += `
+                <div class="prop-mini-card ${colorClass} ${isPledged ? 'pledged-mini' : ''}" 
+                     data-prop-id="${prop.id}"
+                     data-prop-name="${cellData.name}"
+                     data-prop-price="${cellData.price || 0}"
+                     data-prop-houses="${houses}"
+                     data-prop-position="${cellData.id}"
+                     title="${cellData.name}${isPledged ? ' (Įkeista)' : ''}${houseIcon ? ' - ' + houseIcon : ''}">
+                    <div class="prop-mini-icon">${isPledged ? '🔒' : colorIcon}</div>
+                    <div class="prop-mini-houses">${houseIcon}</div>
                 </div>
-                <div class="player-name" style="color:#ff6666;">
-                    <div class="player-figure" style="font-size: 24px; filter: grayscale(1);">${player.figure}</div>
-                    ${player.name} (BANKRUTAVO)
-                </div>
-                <div class="player-money">💰 BANKRUTAVĘS</div>
-                <div class="player-position">📍 BANKRUTAVĘS</div>
-                <div class="player-properties">
-                    <div class="player-properties-title">🏠 Nuosavybės:</div>
-                    <div class="prop-mini-empty">💀 BANKRUTAVĘS</div>
-                </div>
-                <div class="player-total-wealth">💎 Visas turtas: 0€</div>
             `;
-            container.appendChild(playerCard);
-            initCardControls(playerCard, i);
-            continue;
-        }
-        
-        let jailStatusHtml = '';
-        if (inJail[i] && !player.bankrupt) {
-            jailStatusHtml = `<div class="player-jail-status">🚔 KALĖJIME (${jailTurns[i] || 0}/3)</div>`;
-        }
-        
-        let debtIndicatorHtml = '';
-        if (window.currentDebt && currentPlayerIndex === i) {
-            debtIndicatorHtml = `<div class="player-debt-indicator">⚠️ SKOLA: <span style="color:#ff6666">-${window.currentDebt}€</span></div>`;
-        }
-        
-        let propertiesHtml = '<div class="player-properties-title">🏠 Nuosavybės:</div>';
-        propertiesHtml += '<div class="properties-mini-grid">';
-        
-        if (player.properties && player.properties.length > 0) {
-            const sortedProperties = sortPropertiesByPriceAndColor(player.properties, player);
-            sortedProperties.forEach(prop => {
-                const cellData = getCellById(prop.id);
-                if (!cellData) return;
-                
-                let colorIcon = '📌';
-                let colorClass = '';
-                if (cellData.color) {
-                    const colors = { 
-                        'brown': '🟤', 'lightblue': '🔵', 'orange': '🟠', 
-                        'yellow': '🟡', 'red': '🔴', 'purple': '🟣', 
-                        'bronze': '🥉', 'butelka': '🍾', 'lime': '🟢', 
-                        'brightblue': '💙' 
-                    };
-                    colorIcon = colors[cellData.color] || '📌';
-                    colorClass = `prop-color-${cellData.color}`;
-                }
+        });
+    } else {
+        propertiesHtml += '<div class="prop-mini-empty">📭 Nėra nuosavybių</div>';
+    }
+    propertiesHtml += '</div>';
+    
+    let totalWealth = player.money;
+    if (player.properties) {
+        player.properties.forEach(prop => {
+            const cellData = getCellById(prop.id);
+            if (cellData) {
+                totalWealth += cellData.price || 0;
                 const houses = player.houses[prop.id] || 0;
-                const houseIcon = houses === 5 ? '🏨' : houses > 0 ? '🏠'.repeat(houses) : '';
-                const isPledged = player.pledgedProperties && player.pledgedProperties.some(p => p.id === prop.id);
-                
-                propertiesHtml += `
-                    <div class="prop-mini-card ${colorClass} ${isPledged ? 'pledged-mini' : ''}" 
-                         data-prop-id="${prop.id}"
-                         data-prop-name="${cellData.name}"
-                         data-prop-price="${cellData.price || 0}"
-                         data-prop-houses="${houses}"
-                         data-prop-position="${cellData.id}"
-                         title="${cellData.name}${isPledged ? ' (Įkeista)' : ''}${houseIcon ? ' - ' + houseIcon : ''}">
-                        <div class="prop-mini-icon">${isPledged ? '🔒' : colorIcon}</div>
-                        <div class="prop-mini-houses">${houseIcon}</div>
-                    </div>
-                `;
-            });
-        } else {
-            propertiesHtml += '<div class="prop-mini-empty">📭 Nėra nuosavybių</div>';
-        }
-        propertiesHtml += '</div>';
-        
-        let totalWealth = player.money;
-        if (player.properties) {
-            player.properties.forEach(prop => {
-                const cellData = getCellById(prop.id);
-                if (cellData) {
-                    totalWealth += cellData.price || 0;
-                    const houses = player.houses[prop.id] || 0;
-                    totalWealth += houses * 50;
-                }
-            });
-        }
-        
-        const destroyButtonHtml = playerHasHouses(player) ? '<button class="player-extra-btn destroy-extra-btn" data-action="destroy">🏚️ GRIAUTI NAMELIUS</button>' : '';
-        
-        playerCard.innerHTML = `
-            <div class="card-controls">
-                <button class="card-drag-btn" data-card-id="${i}" title="Tempti / Keisti dydį">✋</button>
-                <button class="card-trade-btn" data-card-id="${i}" title="Prekyba">🔄</button>
-            </div>
-            <div class="player-name">
-                <div class="player-figure" style="font-size: 24px;">${player.figure}</div>
-                ${player.name} (${player.figureName})
-            </div>
-            <div class="player-money">💰 Pinigai: <span>${player.money}</span> €</div>
-            ${debtIndicatorHtml}
-            <div class="player-position">📍 Pozicija: ${player.position}</div>
-            ${jailStatusHtml}
-            ${propertiesHtml}
-            <div class="player-total-wealth">💎 Visas turtas: <span>${totalWealth}</span> €</div>
+                totalWealth += houses * 50;
+            }
+        });
+    }
+    
+    const destroyButtonHtml = playerHasHouses(player) ? '<button class="player-extra-btn destroy-extra-btn" data-action="destroy">🏚️ GRIAUTI NAMELIUS</button>' : '';
+    
+    // Patikriname ar einamasis žaidėjas yra šios kortelės savininkas
+    const isMyTurn = (currentPlayerIndex === localPlayerId);
+    
+    // Mygtukai rodomi TIK kai tavo eilė
+    let extraButtonsHtml = '';
+    if (isMyTurn && !player.bankrupt) {
+        extraButtonsHtml = `
             <div class="player-extra-buttons">
                 <button class="player-extra-btn pledge-extra-btn" data-action="pledge">🏦 ĮKEISTI</button>
                 <button class="player-extra-btn sellbank-extra-btn" data-action="sellbank">💰 PARDUOTI</button>
                 ${destroyButtonHtml}
             </div>
-            <div class="card-resize-handles">
-                <div class="card-resize-handle tl"></div>
-                <div class="card-resize-handle tr"></div>
-                <div class="card-resize-handle bl"></div>
-                <div class="card-resize-handle br"></div>
-            </div>
         `;
-        
-        container.appendChild(playerCard);
-        initCardControls(playerCard, i);
-        
-        const pledgeBtn = playerCard.querySelector('[data-action="pledge"]');
-        const sellBankBtn = playerCard.querySelector('[data-action="sellbank"]');
-        const destroyBtn = playerCard.querySelector('[data-action="destroy"]');
-        
-        if (pledgeBtn) {
-            pledgeBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (typeof openPledgeModal === 'function') {
-                    openPledgeModal(player);
-                } else {
-                    showToast('Įkeitimo sistema dar neįkelta', 'error');
-                }
-            });
-        }
-        
-        if (sellBankBtn) {
-            sellBankBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openSellOptionsModal(player);
-            });
-        }
-        
-        if (destroyBtn) {
-            destroyBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                openDestroyHousesModal(player);
-            });
-        }
+    }
+    
+    playerCard.innerHTML = `
+        <div class="card-controls">
+            <button class="card-drag-btn" data-card-id="${localPlayerId}" title="Tempti / Keisti dydį">✋</button>
+            <button class="card-trade-btn" data-card-id="${localPlayerId}" title="Prekyba">🔄</button>
+        </div>
+        <div class="player-name">
+            <div class="player-figure" style="font-size: 24px;">${player.figure}</div>
+            ${player.name} (${player.figureName})
+        </div>
+        <div class="player-money">💰 Pinigai: <span>${player.money}</span> €</div>
+        ${debtIndicatorHtml}
+        <div class="player-position">📍 Pozicija: ${player.position}</div>
+        ${jailStatusHtml}
+        ${propertiesHtml}
+        <div class="player-total-wealth">💎 Visas turtas: <span>${totalWealth}</span> €</div>
+        ${extraButtonsHtml}
+        <div class="card-resize-handles">
+            <div class="card-resize-handle tl"></div>
+            <div class="card-resize-handle tr"></div>
+            <div class="card-resize-handle bl"></div>
+            <div class="card-resize-handle br"></div>
+        </div>
+    `;
+    
+    container.appendChild(playerCard);
+    initCardControls(playerCard, localPlayerId);
+    
+    const pledgeBtn = playerCard.querySelector('[data-action="pledge"]');
+    const sellBankBtn = playerCard.querySelector('[data-action="sellbank"]');
+    const destroyBtn = playerCard.querySelector('[data-action="destroy"]');
+    
+    if (pledgeBtn) {
+        pledgeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (typeof openPledgeModal === 'function') {
+                openPledgeModal(player);
+            } else {
+                showToast('Įkeitimo sistema dar neįkelta', 'error');
+            }
+        });
+    }
+    
+    if (sellBankBtn) {
+        sellBankBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openSellOptionsModal(player);
+        });
+    }
+    
+    if (destroyBtn) {
+        destroyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openDestroyHousesModal(player);
+        });
     }
     
     setTimeout(initHoverCards, 200);
@@ -351,7 +343,7 @@ function openSellToBankModal(player) {
                     yesBtn.addEventListener('click', () => {
                         confirmModal.remove();
                         player.money += sellValue;
-                        player.properties = player.properties.filter(p => p.id !== propId);
+                        player.properties = player.properties.filter(p => p.id !== prop.id);
                         delete cellData.owner;
                         if (player.houses[prop.id]) delete player.houses[prop.id];
                         addLog(`${player.name} pardavė "${prop.name}" bankui už ${sellValue}€`);
@@ -719,7 +711,6 @@ function updatePlayersCards() {
             const player = players[index];
             if (!player) return;
             
-            // BANKRUTAVUSIO ŽAIDĖJO KORTELĖ
             if (player.bankrupt) {
                 card.classList.add('bankrupt-card');
                 const playerNameDiv = card.querySelector('.player-name');
@@ -744,8 +735,9 @@ function updatePlayersCards() {
                 return;
             }
             
-            // NORMALI KORTELĖ
             card.classList.remove('bankrupt-card');
+            
+            // Atnaujiname aktyvumo klasę
             if (index === currentPlayerIndex) { 
                 card.classList.add('active'); 
             } else { 
@@ -833,23 +825,14 @@ function updatePlayersCards() {
             const totalWealthSpan = card.querySelector('.player-total-wealth span');
             if (totalWealthSpan) totalWealthSpan.innerText = totalWealth;
             
+            // Atnaujiname mygtukų matomumą pagal eilę
+            const isMyTurn = (currentPlayerIndex === index);
             const extraButtonsDiv = card.querySelector('.player-extra-buttons');
             if (extraButtonsDiv) {
-                const existingDestroyBtn = extraButtonsDiv.querySelector('.destroy-extra-btn');
-                const hasHouses = playerHasHouses(player);
-                
-                if (hasHouses && !existingDestroyBtn) {
-                    const destroyBtn = document.createElement('button');
-                    destroyBtn.className = 'player-extra-btn destroy-extra-btn';
-                    destroyBtn.setAttribute('data-action', 'destroy');
-                    destroyBtn.innerHTML = '🏚️ GRIAUTI NAMELIUS';
-                    destroyBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        openDestroyHousesModal(player);
-                    });
-                    extraButtonsDiv.appendChild(destroyBtn);
-                } else if (!hasHouses && existingDestroyBtn) {
-                    existingDestroyBtn.remove();
+                if (isMyTurn && !player.bankrupt) {
+                    extraButtonsDiv.style.display = 'flex';
+                } else {
+                    extraButtonsDiv.style.display = 'none';
                 }
             }
         }
@@ -1110,7 +1093,6 @@ function changePlayerCount() {
     }
 }
 
-// ==================== PATAISYTA nextPlayer() FUNKCIJA ====================
 function nextPlayer() {
     console.log("Prieš nextPlayer: currentPlayerIndex =", currentPlayerIndex);
     
