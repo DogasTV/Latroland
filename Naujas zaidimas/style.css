@@ -1,0 +1,5351 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #1a3a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    color: #ffd700;
+    text-shadow: 3px 3px 0 #8b0000;
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+}
+
+.game-layout {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.right-panels {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.game-board-wrapper {
+    position: relative;
+    overflow: visible;
+    cursor: grab;
+}
+
+.game-board-wrapper.dragging-board {
+    cursor: grabbing;
+}
+
+.game-board {
+    transition: transform 0.1s ease;
+    transform-origin: center center;
+    background: #2e7d32;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), inset 0 0 0 4px #1b5e20, inset 0 0 0 8px #4caf50;
+    display: inline-block;
+    max-width: 100%;
+    width: auto;
+    height: auto;
+}
+
+.board-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+.top-row {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+.bottom-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 0;
+}
+
+.middle-section {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.left-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-right: 0;
+}
+
+.right-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 0;
+}
+
+.cell {
+    background: #f5f5dc;
+    border: 2px solid #c4a35a;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 5px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1), 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    position: relative;
+}
+
+.cell:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    background: #fff8dc;
+}
+
+.corner {
+    background: #ffdab9;
+    border: 3px solid #b8860b;
+    box-shadow: inset 0 0 0 2px #ffdead, 0 4px 8px rgba(0,0,0,0.3);
+    font-weight: bold;
+    width: 130px;
+    height: 130px;
+    overflow: hidden;
+    position: relative;
+}
+
+.corner .cell-number {
+    display: none !important;
+}
+
+.corner .cell-name {
+    white-space: normal;
+    word-break: break-word;
+    max-width: 100%;
+    overflow-wrap: break-word;
+}
+
+.corner:hover {
+    background: #ffdead;
+}
+
+.horizontal-cell {
+    width: 80px;
+    height: 130px;
+}
+
+.vertical-cell {
+    width: 130px;
+    height: 80px;
+}
+
+.top-left-corner {
+    border-radius: 20px 8px 8px 8px;
+}
+
+.top-right-corner {
+    border-radius: 8px 20px 8px 8px;
+}
+
+.bottom-left-corner {
+    border-radius: 8px 8px 8px 20px;
+}
+
+.bottom-right-corner {
+    border-radius: 8px 8px 20px 8px;
+}
+
+.cell-number {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c3e2c;
+    background: rgba(255,255,200,0.8);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+    border: 1px solid #c4a35a;
+    transition: all 0.2s ease;
+    cursor: help;
+}
+
+.cell-number:hover {
+    transform: scale(1.1);
+    background: #ffd700;
+    color: #8b0000;
+    box-shadow: 0 0 8px gold;
+}
+
+.cell-name {
+    font-size: 9px;
+    color: #4a3b1a;
+    text-transform: uppercase;
+    word-break: break-word;
+    max-width: 90%;
+}
+
+.top-row .cell:not(.corner) .cell-number {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c3e2c;
+    background: rgba(255,255,200,0.8);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+    border: 1px solid #c4a35a;
+}
+
+.bottom-row .cell:not(.corner) .cell-number {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c3e2c;
+    background: rgba(255,255,200,0.8);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+    border: 1px solid #c4a35a;
+}
+
+.right-col .vertical-cell {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.right-col .vertical-cell .cell-number,
+.right-col .vertical-cell .cell-name,
+.right-col .vertical-cell .cell-price,
+.right-col .vertical-cell .cell-owner-token {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+}
+
+.right-col .vertical-cell .cell-number {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c3e2c;
+    background: rgba(255,255,200,0.8);
+    width: auto;
+    height: auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0;
+    border: 1px solid #c4a35a;
+    padding: 5px;
+}
+
+.right-col .vertical-cell .cell-price {
+    font-size: 10px;
+    font-weight: bold;
+    color: #2e7d32;
+    margin: 5px 0;
+}
+
+.left-col .vertical-cell {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-col .vertical-cell .cell-number,
+.left-col .vertical-cell .cell-name,
+.left-col .vertical-cell .cell-price,
+.left-col .vertical-cell .cell-owner-token {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+}
+
+.left-col .vertical-cell .cell-number {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c3e2c;
+    background: rgba(255,255,200,0.8);
+    width: auto;
+    height: auto;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0;
+    border: 1px solid #c4a35a;
+    padding: 5px;
+}
+
+.left-col .vertical-cell .cell-price {
+    font-size: 10px;
+    font-weight: bold;
+    color: #2e7d32;
+    margin: 5px 0;
+}
+
+.left-col .vertical-cell[data-color="brightblue"] {
+    position: relative;
+    padding-right: 25px;
+}
+.left-col .vertical-cell[data-color="brightblue"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 22px;
+    background: linear-gradient(135deg, #00BFFF, #1E90FF);
+    border-radius: 0 6px 6px 0;
+}
+
+.left-col .vertical-cell[data-color="lime"] {
+    position: relative;
+    padding-right: 25px;
+}
+.left-col .vertical-cell[data-color="lime"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 22px;
+    background: linear-gradient(135deg, #00FF00, #32CD32);
+    border-radius: 0 6px 6px 0;
+}
+
+.right-col .vertical-cell[data-color="bronze"] {
+    position: relative;
+    padding-right: 25px;
+}
+.right-col .vertical-cell[data-color="bronze"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 22px;
+    background: linear-gradient(135deg, #CD7F32, #B87333);
+    border-radius: 0 6px 6px 0;
+}
+
+.right-col .vertical-cell[data-color="red"] {
+    position: relative;
+    padding-right: 25px;
+}
+.right-col .vertical-cell[data-color="red"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 22px;
+    background: linear-gradient(135deg, #DC143C, #B22222);
+    border-radius: 0 6px 6px 0;
+}
+
+.top-row .horizontal-cell[data-color="brown"] { position: relative; padding-top: 25px; }
+.top-row .horizontal-cell[data-color="brown"]::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 22px; background: linear-gradient(135deg, #8B4513, #A0522D); border-radius: 6px 6px 0 0; }
+
+.top-row .horizontal-cell[data-color="lightblue"] { position: relative; padding-top: 25px; }
+.top-row .horizontal-cell[data-color="lightblue"]::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 22px; background: linear-gradient(135deg, #87CEEB, #5F9EA0); border-radius: 6px 6px 0 0; }
+
+.top-row .horizontal-cell[data-color="orange"] { position: relative; padding-top: 25px; }
+.top-row .horizontal-cell[data-color="orange"]::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 22px; background: linear-gradient(135deg, #FFA500, #FF8C00); border-radius: 6px 6px 0 0; }
+
+.bottom-row .horizontal-cell[data-color="yellow"] { position: relative; padding-top: 25px; }
+.bottom-row .horizontal-cell[data-color="yellow"]::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 22px; background: linear-gradient(135deg, #FFD700, #FFA500); border-radius: 6px 6px 0 0; }
+
+.bottom-row .horizontal-cell[data-color="red"] { position: relative; padding-top: 25px; }
+.bottom-row .horizontal-cell[data-color="red"]::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 22px; background: linear-gradient(135deg, #DC143C, #B22222); border-radius: 6px 6px 0 0; }
+
+.bottom-row .horizontal-cell[data-color="purple"] { position: relative; padding-top: 25px; }
+.bottom-row .horizontal-cell[data-color="purple"]::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 22px; background: linear-gradient(135deg, #9370DB, #8B008B); border-radius: 6px 6px 0 0; }
+
+.bottom-row .horizontal-cell[data-color="butelka"] { position: relative; padding-top: 25px; }
+.bottom-row .horizontal-cell[data-color="butelka"]::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 22px; background: linear-gradient(135deg, #2E8B57, #1a5c3a); border-radius: 6px 6px 0 0; }
+
+/* ========== KAULIUKŲ IŠDĖSTYMAS ========== */
+.center-dice-container {
+    display: flex;
+    gap: 60px;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.center-dice {
+    width: 85px;
+    height: 85px;
+    background: linear-gradient(145deg, #ffffff, #e0e0e0);
+    border-radius: 14px;
+    box-shadow: 0 8px 0 rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.8);
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.center-dice:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.2), 0 15px 25px rgba(0,0,0,0.3);
+}
+
+.center-dice.rolling {
+    animation: diceRoll 0.3s ease-in-out;
+}
+
+@keyframes diceRoll {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(12deg) scale(1.1); }
+    50% { transform: rotate(-12deg) scale(1.1); }
+    75% { transform: rotate(6deg) scale(1.05); }
+    100% { transform: rotate(0deg) scale(1); }
+}
+
+/* ========== KAULIUKŲ TAŠKAI – JUODI, DIDELIS ATSTUMAS ========== */
+.dice-dots-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.dice-dot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #1a1a2e;
+    border-radius: 50%;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.6);
+    display: none;
+}
+
+.dice-dot.visible {
+    display: block !important;
+    background: #000000 !important;
+    box-shadow: 0 0 4px rgba(0,0,0,0.8) !important;
+}
+
+/* Taškai arčiau kampų – didesnis atstumas tarp jų */
+.dot-tl { top: 8px; left: 8px; }
+.dot-tc { top: 8px; left: 50%; transform: translateX(-50%); }
+.dot-tr { top: 8px; right: 8px; }
+.dot-cl { top: 50%; left: 8px; transform: translateY(-50%); }
+.dot-cc { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.dot-cr { top: 50%; right: 8px; transform: translateY(-50%); }
+.dot-bl { bottom: 8px; left: 8px; }
+.dot-bc { bottom: 8px; left: 50%; transform: translateX(-50%); }
+.dot-br { bottom: 8px; right: 8px; }
+
+/* ========== CENTRO PANELĖ ========== */
+.board-center {
+    margin-top: -30px;
+}
+
+.center-info {
+    background: rgba(0,0,0,0.75);
+    padding: 10px 15px;
+    border-radius: 20px;
+    margin: 5px 0;
+    text-align: center;
+    width: 90%;
+}
+
+.info-row {
+    color: #ffd700;
+    font-size: 13px;
+    font-weight: bold;
+    margin: 4px 0;
+}
+
+.info-row span {
+    color: #ffaa00;
+    font-size: 16px;
+    background: #1a3a1a;
+    padding: 2px 8px;
+    border-radius: 15px;
+    margin-left: 8px;
+}
+
+/* ========== RESPONSIVE EKRANAMS ========== */
+@media (max-width: 1200px) {
+    .game-board-wrapper {
+        margin-top: -20px;
+    }
+    .center-dice {
+        width: 6vw !important;
+        height: 6vw !important;
+    }
+    .center-dice-container {
+        gap: 4vw;
+    }
+}
+
+@media (max-width: 900px) {
+    .board-center {
+        margin-top: 0;
+    }
+    .game-board-wrapper {
+        margin-top: 0;
+    }
+    .center-dice-container {
+        gap: 30px;
+    }
+}
+
+/* Likęs CSS išlieka toks pat kaip tavo originalo */
+.plane-icon {
+    font-size: 32px;
+    display: inline-block;
+    margin: 5px 0;
+    animation: fly 1s ease-in-out infinite;
+}
+
+@keyframes fly {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    50% { transform: translateX(5px) translateY(-5px); }
+}
+
+.devil-icon {
+    font-size: 36px;
+    display: inline-block;
+    margin: 5px 0;
+    animation: devilDance 0.8s ease-in-out infinite;
+}
+
+@keyframes devilDance {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.1) rotate(-10deg); }
+    75% { transform: scale(1.1) rotate(10deg); }
+}
+
+.lightning-icon {
+    font-size: 32px;
+    display: inline-block;
+    margin: 5px 0;
+    animation: lightningPulse 0.5s ease-in-out infinite;
+    text-shadow: 0 0 5px yellow;
+}
+
+@keyframes lightningPulse {
+    0%, 100% { transform: scale(1); opacity: 1; color: #ffd700; text-shadow: 0 0 5px gold; }
+    50% { transform: scale(1.3); opacity: 0.8; color: #ff6600; text-shadow: 0 0 15px orange; }
+}
+
+.beer-icon {
+    font-size: 32px;
+    display: inline-block;
+    margin: 5px 0;
+    position: relative;
+    animation: beerFloat 1s ease-in-out infinite;
+}
+
+.beer-foam {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    animation: foamRise 0.8s ease-in-out infinite;
+}
+
+@keyframes beerFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes foamRise {
+    0%, 100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    50% { opacity: 0.5; transform: translateX(-50%) translateY(-5px); }
+}
+
+.water-icon {
+    font-size: 32px;
+    display: inline-block;
+    margin: 5px 0;
+    background-color: #4a90d9;
+    border-radius: 50%;
+    padding: 5px;
+    animation: waterGlow 1.5s ease-in-out infinite;
+    position: relative;
+}
+
+.water-icon .water-content {
+    display: inline-block;
+}
+
+.water-sparkle {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 12px;
+    animation: waterSparkle 0.8s ease-in-out infinite;
+}
+
+@keyframes waterGlow {
+    0%, 100% { text-shadow: 0 0 5px #00aaff; transform: scale(1); }
+    50% { text-shadow: 0 0 15px #00ffff, 0 0 5px #0066ff; transform: scale(1.1); }
+}
+
+@keyframes waterSparkle {
+    0%, 100% { opacity: 0; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(-5px); }
+}
+
+.hospital-icon {
+    font-size: 32px;
+    display: inline-block;
+    margin: 5px 0;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.8; text-shadow: 0 0 10px red; }
+}
+
+.treasure-icon {
+    font-size: 32px;
+    display: inline-block;
+    margin: 5px 0;
+    animation: treasureGlow 1.5s ease-in-out infinite;
+    position: relative;
+}
+
+.treasure-icon .treasure-content {
+    display: inline-block;
+    transform: rotate(180deg);
+}
+
+.treasure-sparkle {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 12px;
+    animation: sparkle 0.8s ease-in-out infinite;
+}
+
+@keyframes treasureGlow {
+    0%, 100% { text-shadow: 0 0 5px gold; transform: scale(1); }
+    50% { text-shadow: 0 0 25px #ffd700, 0 0 15px orange, 0 0 5px red; transform: scale(1.15); }
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+}
+
+.vacation-icon {
+    font-size: 32px;
+    display: inline-block;
+    margin: 5px 0;
+    animation: vacationGlow 1.5s ease-in-out infinite;
+    position: relative;
+}
+
+.vacation-icon .vacation-content {
+    display: inline-block;
+    transform: rotate(180deg);
+}
+
+.vacation-sparkle {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 12px;
+    animation: vacationSparkle 0.8s ease-in-out infinite;
+}
+
+@keyframes vacationGlow {
+    0%, 100% { text-shadow: 0 0 5px lightgreen; transform: scale(1); }
+    50% { text-shadow: 0 0 25px #00ff00, 0 0 15px green, 0 0 5px yellow; transform: scale(1.15); }
+}
+
+@keyframes vacationSparkle {
+    0%, 100% { opacity: 0; transform: scale(0); }
+    50% { opacity: 1; transform: scale(1); }
+}
+
+.birthday-icon {
+    font-size: 32px;
+    display: inline-block;
+    margin: 5px 0;
+    position: relative;
+    animation: birthdayGlow 1.5s ease-in-out infinite;
+}
+
+.birthday-icon .birthday-content {
+    display: inline-block;
+    transform: rotate(180deg);
+}
+
+.birthday-candle {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 14px;
+    animation: candleFlicker 0.2s ease-in-out infinite;
+}
+
+@keyframes birthdayGlow {
+    0%, 100% { text-shadow: 0 0 5px gold; transform: scale(1); }
+    50% { text-shadow: 0 0 15px orange, 0 0 5px red; transform: scale(1.1); }
+}
+
+@keyframes candleFlicker {
+    0%, 100% { opacity: 1; text-shadow: 0 0 3px orange; }
+    50% { opacity: 0.5; text-shadow: 0 0 8px red; }
+}
+
+.tax-icon {
+    font-size: 32px;
+    display: inline-block;
+    margin: 5px 0;
+    animation: taxShake 0.6s ease-in-out infinite;
+}
+
+@keyframes taxShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+.chance-icon {
+    font-size: 32px;
+    display: inline-block;
+    margin: 5px 0;
+    animation: chanceSpin 1s ease-in-out infinite;
+}
+
+@keyframes chanceSpin {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(15deg); }
+}
+
+.wrench-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0px;
+    margin: 5px 0;
+}
+
+.wrench-cross-left {
+    display: inline-block;
+    font-size: 36px;
+    animation: wrenchOrbitLeft 1s ease-in-out infinite, wrenchGlow 0.8s ease-in-out infinite;
+}
+
+.wrench-cross-right {
+    display: inline-block;
+    font-size: 36px;
+    margin-left: -50px;
+    animation: wrenchOrbitRight 1s ease-in-out infinite, wrenchGlow 0.8s ease-in-out infinite 0.2s;
+}
+
+@keyframes wrenchOrbitLeft {
+    0% { transform: rotate(-45deg) translateX(0); }
+    25% { transform: rotate(-45deg) translateX(-5px) translateY(-3px); }
+    50% { transform: rotate(-45deg) translateX(0) translateY(-5px); }
+    75% { transform: rotate(-45deg) translateX(5px) translateY(-3px); }
+    100% { transform: rotate(-45deg) translateX(0); }
+}
+
+@keyframes wrenchOrbitRight {
+    0% { transform: rotate(45deg) translateX(0); }
+    25% { transform: rotate(45deg) translateX(5px) translateY(-3px); }
+    50% { transform: rotate(45deg) translateX(0) translateY(-5px); }
+    75% { transform: rotate(45deg) translateX(-5px) translateY(-3px); }
+    100% { transform: rotate(45deg) translateX(0); }
+}
+
+@keyframes wrenchGlow {
+    0%, 100% { color: #666; text-shadow: none; filter: brightness(1); }
+    50% { color: #ff6600; text-shadow: 0 0 8px orange, 0 0 3px red; filter: brightness(1.3); }
+}
+
+/* ========== KALĖJIMO LANGELIS ========== */
+.jail-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    gap: 2px;
+    overflow: hidden;
+}
+
+.jail-bars-left, .jail-bars-right {
+    font-size: 10px;
+    color: #ff6666;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    animation: jailBarsGlow 1s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+.jail-area {
+    text-align: center;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.jail-name {
+    font-size: 11px;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: 0 0 5px red, 0 0 10px darkred;
+    animation: jailNamePulse 0.8s ease-in-out infinite;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.jail-subtitle {
+    font-size: 16px;
+    margin-top: 2px;
+    animation: jailIconPulse 1s ease-in-out infinite;
+}
+
+@keyframes jailBarsGlow {
+    0%, 100% { opacity: 0.5; text-shadow: none; }
+    50% { opacity: 1; text-shadow: 0 0 5px red; }
+}
+
+@keyframes jailNamePulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 10px red, 0 0 5px darkred; }
+}
+
+@keyframes jailIconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* ========== PARKINGO LANGELIS ========== */
+.parking-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    gap: 5px;
+}
+
+.parking-sign {
+    font-size: 28px;
+    animation: parkingSignPulse 1s ease-in-out infinite;
+    text-shadow: 0 0 5px #ffd700;
+}
+
+.parking-lines {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.parking-line {
+    width: 15px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+    animation: parkingLineFlash 0.8s ease-in-out infinite;
+}
+
+.parking-line:nth-child(1) { animation-delay: 0s; }
+.parking-line:nth-child(2) { animation-delay: 0.2s; }
+.parking-line:nth-child(3) { animation-delay: 0.4s; }
+
+.parking-car {
+    font-size: 18px;
+    animation: parkingCarMove 1.5s ease-in-out infinite;
+}
+
+@keyframes parkingSignPulse {
+    0%, 100% { transform: scale(1); text-shadow: 0 0 5px #ffd700; }
+    50% { transform: scale(1.1); text-shadow: 0 0 15px #ffd700, 0 0 5px orange; }
+}
+
+@keyframes parkingLineFlash {
+    0%, 100% { opacity: 0.3; width: 10px; }
+    50% { opacity: 1; width: 18px; background: #ffd700; }
+}
+
+@keyframes parkingCarMove {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(5px); }
+}
+
+/* ========== EIK Į KALĖJIMĄ LANGELIS ========== */
+.go-to-jail-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    gap: 5px;
+}
+
+.go-to-jail-icon {
+    font-size: 24px;
+    animation: goToJailPulse 0.8s ease-in-out infinite;
+}
+
+.go-to-jail-name {
+    font-size: 11px;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: 0 0 5px red, 0 0 10px darkred;
+    animation: goToJailTextPulse 0.6s ease-in-out infinite;
+    text-align: center;
+    line-height: 1.2;
+    white-space: normal;
+    word-break: break-word;
+}
+
+@keyframes goToJailPulse {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.2); opacity: 1; text-shadow: 0 0 5px red; }
+}
+
+@keyframes goToJailTextPulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 8px red, 0 0 3px darkred; }
+}
+
+/* ========== START LANGELIS ========== */
+.start-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    gap: 5px;
+    position: relative;
+}
+
+.start-icon {
+    font-size: 32px;
+    animation: startIconPulse 0.8s ease-in-out infinite;
+}
+
+.start-name {
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #8b0000;
+    letter-spacing: 2px;
+    animation: startNameGlow 1s ease-in-out infinite;
+}
+
+.start-sparkle {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 14px;
+    animation: startSparkleRotate 1.5s ease-in-out infinite;
+}
+
+.start-prize {
+    position: absolute;
+    bottom: 5px;
+    left: 10px;
+    font-size: 14px;
+    animation: startPrizeBounce 0.8s ease-in-out infinite;
+}
+
+@keyframes startIconPulse {
+    0%, 100% { transform: scale(1); text-shadow: 0 0 0px gold; }
+    50% { transform: scale(1.1); text-shadow: 0 0 10px gold, 0 0 5px orange; }
+}
+
+@keyframes startNameGlow {
+    0%, 100% { opacity: 0.8; text-shadow: 1px 1px 0 #8b0000; }
+    50% { opacity: 1; text-shadow: 0 0 8px gold, 1px 1px 0 #8b0000; }
+}
+
+@keyframes startSparkleRotate {
+    0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.5; }
+    50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+}
+
+@keyframes startPrizeBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+/* Kalėjimo vieta įkalintiems žaidėjams (už grotų) */
+.jail-prisoner-area {
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 10px;
+    padding: 2px;
+    z-index: 50;
+}
+
+.jail-prisoner {
+    font-size: 16px;
+    filter: drop-shadow(0 0 3px red);
+    animation: prisonerPulse 1s ease-in-out infinite;
+}
+
+@keyframes prisonerPulse {
+    0%, 100% { opacity: 0.7; transform: translateY(0); }
+    50% { opacity: 1; transform: translateY(-3px); }
+}
+
+.left-col .cell-owner-token {
+    transform: rotate(180deg) !important;
+}
+
+.left-col .player-token {
+    transform: rotate(180deg) !important;
+}
+
+.left-col .wrench-icon,
+.left-col .plane-icon,
+.left-col .tax-icon,
+.left-col .chance-icon,
+.left-col .devil-icon,
+.left-col .lightning-icon,
+.left-col .beer-icon,
+.left-col .water-icon,
+.left-col .hospital-icon,
+.left-col .treasure-icon,
+.left-col .vacation-icon,
+.left-col .birthday-icon {
+    transform: rotate(180deg) !important;
+}
+
+.left-col .wrench-icon span,
+.left-col .plane-icon span,
+.left-col .tax-icon span,
+.left-col .chance-icon span,
+.left-col .devil-icon span,
+.left-col .lightning-icon span,
+.left-col .beer-icon span,
+.left-col .water-icon span,
+.left-col .hospital-icon span,
+.left-col .treasure-icon span,
+.left-col .vacation-icon span,
+.left-col .birthday-icon span {
+    transform: rotate(0deg) !important;
+}
+
+/* ========== MINI KORTELĖS NUOSAVYBĖMS ========== */
+.properties-mini-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 5px;
+    max-height: 80px;
+    overflow-y: auto;
+}
+
+.prop-mini-card {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    background: #3a6b3a;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid #ffd700;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+
+.prop-mini-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 8px #ffd700;
+}
+
+.prop-mini-icon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.prop-mini-houses {
+    font-size: 8px;
+    color: #ffd700;
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+}
+
+.prop-mini-empty {
+    color: #888;
+    font-size: 11px;
+    padding: 5px;
+    text-align: center;
+}
+
+.prop-color-brown { background: linear-gradient(135deg, #8B4513, #6b3410); }
+.prop-color-lightblue { background: linear-gradient(135deg, #87CEEB, #5F9EA0); }
+.prop-color-orange { background: linear-gradient(135deg, #FFA500, #cc8400); }
+.prop-color-yellow { background: linear-gradient(135deg, #FFD700, #cca800); }
+.prop-color-red { background: linear-gradient(135deg, #DC143C, #b01030); }
+.prop-color-purple { background: linear-gradient(135deg, #9370DB, #7350bb); }
+.prop-color-bronze { background: linear-gradient(135deg, #CD7F32, #a86328); }
+.prop-color-butelka { background: linear-gradient(135deg, #2E8B57, #1e6b3a); }
+.prop-color-lime { background: linear-gradient(135deg, #32CD32, #22a822); }
+.prop-color-brightblue { background: linear-gradient(135deg, #00BFFF, #0099cc); }
+
+/* ========== IŠŠOKANČI HOVER KORTELĖ ========== */
+.prop-hover-card {
+    position: fixed;
+    width: 180px;
+    background: #1b4d1b;
+    border: 2px solid #ffd700;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 10001;
+    overflow: hidden;
+    pointer-events: none;
+    animation: fadeInUp 0.2s ease;
+}
+
+.prop-hover-color {
+    width: 100%;
+    height: 8px;
+}
+
+.prop-hover-content {
+    padding: 12px;
+    text-align: center;
+}
+
+.prop-hover-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.prop-hover-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 8px;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.prop-hover-price {
+    font-size: 13px;
+    color: #90EE90;
+    margin-bottom: 5px;
+}
+
+.prop-hover-position {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 5px;
+}
+
+.prop-hover-houses {
+    font-size: 13px;
+    color: #ffd700;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stats-panel {
+    width: 250px;
+    background: #1b4d1b;
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    border: 2px solid #4caf50;
+}
+
+.stats-panel h2 {
+    color: #ffd700;
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.stats-panel p {
+    color: #ddd;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.stats-panel span {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.reset-positions-btn {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    width: 100%;
+}
+
+.reset-positions-btn:hover {
+    background: #ffaa00;
+}
+
+.player-count-btn {
+    background: #4caf50;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.player-count-btn:active {
+    transform: translateY(2px);
+}
+
+.save-game-btn, .load-game-btn, .reset-game-btn {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.save-game-btn:hover, .load-game-btn:hover, .reset-game-btn:hover {
+    background: #ffaa00;
+    transform: scale(1.02);
+}
+
+.reset-game-btn {
+    background: #8b0000;
+    color: #ffd700;
+}
+
+.reset-game-btn:hover {
+    background: #a00000;
+}
+
+.cell-price {
+    font-size: 10px;
+    font-weight: bold;
+    color: #2e7d32;
+    margin-top: 3px;
+}
+
+.cell-owner-token {
+    font-size: 15px;
+    margin: 5px 0;
+    filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.3));
+}
+
+.animations-toggle-btn, .cards-choice-toggle-btn {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.animations-toggle-btn:hover, .cards-choice-toggle-btn:hover {
+    background: #ffaa00;
+    transform: scale(1.02);
+}
+
+.card-animate {
+    animation: cardFlip 0.3s ease-in-out;
+}
+
+@keyframes cardFlip {
+    0% { transform: scale(1) rotateY(0deg); }
+    50% { transform: scale(1.1) rotateY(90deg); }
+    100% { transform: scale(1) rotateY(0deg); }
+}
+
+.choice-cards-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10003;
+}
+
+.choice-cards-modal-content {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    border: 3px solid #ffd700;
+}
+
+.choice-cards-modal-content h3 {
+    color: #ffd700;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.choice-cards-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.choice-card {
+    width: 200px;
+    height: 280px;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.choice-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.choice-card.flipped .choice-card-inner {
+    transform: rotateY(180deg);
+}
+
+.choice-card-front, .choice-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.choice-card-front {
+    background: #8b0000;
+    color: #ffd700;
+    font-size: 60px;
+    border: 2px solid #ffd700;
+}
+
+.choice-card-back {
+    background: #fff8dc;
+    color: #333;
+    transform: rotateY(180deg);
+    font-size: 14px;
+    font-weight: bold;
+    border: 2px solid #8b0000;
+}
+
+.choice-cards-hint {
+    color: #ffd700;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.trade-modal, .trade-modal-large, .trade-proposal-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10005;
+}
+
+.trade-modal-content, .trade-modal-large-content, .trade-proposal-modal-content {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    border: 3px solid #ffd700;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.trade-modal-content h3, .trade-modal-large-content h3, .trade-proposal-modal-content h3 {
+    color: #ffd700;
+    margin-bottom: 15px;
+}
+
+.trade-player-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.trade-section-title {
+    color: #ffd700;
+    font-weight: bold;
+    margin: 10px 0 5px;
+    text-align: left;
+}
+
+.trade-properties-list {
+    max-height: 300px;
+    overflow-y: auto;
+    background: #0d2b0d;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.trade-property-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 5px;
+    background: #1b4d1b;
+    border-radius: 8px;
+    color: white;
+}
+
+.trade-property-price {
+    color: #ffd700;
+    font-size: 12px;
+}
+
+.trade-sell-btn {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.trade-sell-btn:hover {
+    background: #ffaa00;
+}
+
+.trade-players {
+    display: flex;
+    gap: 15px;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.trade-player {
+    flex: 1;
+    background: #0d2b0d;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.trade-player-name {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.trade-player-money {
+    color: #ffd700;
+    margin-bottom: 10px;
+}
+
+.trade-arrow {
+    font-size: 30px;
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+}
+
+.trade-offer-properties, .trade-request-properties {
+    max-height: 150px;
+    overflow-y: auto;
+    margin: 10px 0;
+    text-align: left;
+}
+
+.trade-property-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px;
+    color: white;
+}
+
+.trade-offer-money {
+    margin-top: 10px;
+    text-align: left;
+}
+
+.trade-offer-money label {
+    color: #ffd700;
+    font-size: 12px;
+}
+
+.trade-offer-money input {
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    margin-top: 5px;
+}
+
+.trade-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.trade-send-btn, .trade-accept-btn {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.trade-cancel-btn, .trade-reject-btn {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.trade-proposal-details {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.trade-proposal-sender, .trade-proposal-receiver {
+    flex: 1;
+    background: #0d2b0d;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.trade-proposal-player {
+    color: #ffd700;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.trade-proposal-items {
+    text-align: left;
+    color: white;
+}
+
+.trade-proposal-items div {
+    padding: 3px 0;
+}
+
+.trade-proposal-arrow {
+    font-size: 24px;
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+}
+
+.trade-proposal-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.trade-no-properties {
+    color: #aaa;
+    text-align: center;
+    padding: 10px;
+}
+
+.player-card {
+    position: absolute;
+    background: #2e7d32;
+    border-radius: 12px;
+    padding: 12px;
+    border: 2px solid #ffd700;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 1001;
+    transition: box-shadow 0.2s;
+    min-width: 200px;
+}
+
+.player-card.locked {
+    opacity: 0.9;
+    border-color: #888;
+}
+
+.player-card.locked .card-controls button {
+    opacity: 0.7;
+}
+
+.player-card.dragging-card {
+    opacity: 0.85;
+    cursor: grabbing;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+
+.card-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+    margin-bottom: 8px;
+}
+
+.card-controls button {
+    background: #2e7d32;
+    color: #ffd700;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.card-controls button:hover {
+    background: #4caf50;
+    transform: scale(1.05);
+}
+
+.card-resize-handles {
+    position: relative;
+}
+
+.card-resize-handle {
+    width: 16px !important;
+    height: 16px !important;
+    background: #ffd700 !important;
+    border: 2px solid #1b4d1b !important;
+    border-radius: 50%;
+    cursor: nw-resize;
+    z-index: 10001 !important;
+}
+
+.card-resize-handle:hover {
+    transform: scale(1.2);
+    background: #ffaa00;
+}
+
+.card-resize-handle.tl {
+    top: -7px;
+    left: -7px;
+    cursor: nw-resize;
+}
+
+.card-resize-handle.tr {
+    top: -7px;
+    right: -7px;
+    cursor: ne-resize;
+}
+
+.card-resize-handle.bl {
+    bottom: -7px;
+    left: -7px;
+    cursor: sw-resize;
+}
+
+.card-resize-handle.br {
+    bottom: -7px;
+    right: -7px;
+    cursor: se-resize;
+}
+
+.player-card.active {
+    background: #4caf50;
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 20px #ffd700;
+}
+
+.player-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffd700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.player-figure {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+    border-radius: 50%;
+    font-size: 20px;
+}
+
+.player-money {
+    font-size: 14px;
+    color: #90EE90;
+    margin-bottom: 8px;
+}
+
+.player-money span {
+    font-weight: bold;
+    font-size: 16px;
+    color: #ffd700;
+}
+
+.player-position {
+    font-size: 12px;
+    color: #ddd;
+    margin-bottom: 8px;
+}
+
+.player-properties {
+    font-size: 11px;
+    color: #ccc;
+    max-height: 80px;
+    overflow-y: auto;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid #4caf50;
+}
+
+.player-properties-title {
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 3px;
+}
+
+.player-total-wealth {
+    font-size: 12px;
+    color: #ffd700;
+    margin-top: 8px;
+    padding-top: 5px;
+    border-top: 1px solid #4caf50;
+    text-align: center;
+}
+
+.player-total-wealth span {
+    font-weight: bold;
+    font-size: 14px;
+    color: #ffaa00;
+}
+
+.player-card.active .player-figure {
+    background: rgba(255,215,0,0.5);
+    box-shadow: 0 0 10px gold;
+}
+
+.build-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10006;
+}
+
+.build-modal-content {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    border: 3px solid #ffd700;
+    min-width: 320px;
+}
+
+.build-modal-content h3 {
+    color: #ffd700;
+    margin-bottom: 15px;
+}
+
+.build-current {
+    font-size: 24px;
+    color: white;
+    margin: 10px 0;
+}
+
+.build-info {
+    background: #0d2b0d;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    color: #ddd;
+}
+
+.build-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.build-house-btn, .build-hotel-btn, .sell-house-btn, .build-cancel-btn {
+    padding: 10px;
+    border: none;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.build-house-btn {
+    background: #ffd700;
+    color: #8b0000;
+}
+
+.build-hotel-btn {
+    background: #ff6600;
+    color: white;
+}
+
+.sell-house-btn {
+    background: #8b0000;
+    color: #ffd700;
+}
+
+.build-cancel-btn {
+    background: #444;
+    color: white;
+}
+
+.build-house-btn:hover, .build-hotel-btn:hover, .sell-house-btn:hover {
+    transform: scale(1.02);
+}
+
+.cell-houses {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    font-size: 10px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 10px;
+    padding: 1px 4px;
+    color: #ffd700;
+}
+
+.draggable-log {
+    position: fixed;
+    width: 350px;
+    min-width: 250px;
+    min-height: 200px;
+    max-width: 90vw;
+    max-height: 80vh;
+    background: #1b4d1b;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    border: 2px solid #ffd700;
+    display: flex;
+    flex-direction: column;
+    z-index: 2000;
+    backdrop-filter: blur(2px);
+    cursor: default;
+    transition: box-shadow 0.2s;
+    overflow: visible;
+}
+
+.draggable-log.dragging {
+    opacity: 0.85;
+    cursor: grabbing;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+}
+
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #0d2b0d;
+    border-radius: 13px 13px 0 0;
+    border-bottom: 1px solid #ffd700;
+    cursor: grab;
+}
+
+.draggable-log.dragging .log-header {
+    cursor: grabbing;
+}
+
+.log-header span {
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.log-drag-btn, .log-clear-btn {
+    background: #2e7d32;
+    color: #ffd700;
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 5px;
+    transition: all 0.2s;
+}
+
+.log-drag-btn:hover, .log-clear-btn:hover {
+    background: #4caf50;
+    transform: scale(1.05);
+}
+
+.log-list {
+    flex: 1;
+    overflow-y: auto;
+    background: #0d2b0d;
+    border-radius: 0 0 13px 13px;
+    padding: 8px;
+    font-family: monospace;
+    font-size: 11px;
+}
+
+.log-entry {
+    padding: 4px 6px;
+    margin-bottom: 3px;
+    border-bottom: 1px solid #2e7d32;
+    color: #ddd;
+    word-break: break-word;
+}
+
+.log-entry:last-child {
+    border-bottom: none;
+}
+
+.draggable-log {
+    top: 150px;
+    right: 30px;
+    left: auto;
+    bottom: auto;
+}
+
+.log-resize-handle {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #ffd700;
+    border-radius: 50%;
+    border: 2px solid #1b4d1b;
+    cursor: nw-resize;
+    z-index: 2001;
+    transition: transform 0.1s;
+}
+
+.log-resize-handle:hover {
+    transform: scale(1.2);
+    background: #ffaa00;
+}
+
+.log-resize-handle.tl {
+    top: -8px;
+    left: -8px;
+    cursor: nw-resize;
+}
+
+.log-resize-handle.tr {
+    top: -8px;
+    right: -8px;
+    cursor: ne-resize;
+}
+
+.log-resize-handle.bl {
+    bottom: -8px;
+    left: -8px;
+    cursor: sw-resize;
+}
+
+.log-resize-handle.br {
+    bottom: -8px;
+    right: -8px;
+    cursor: se-resize;
+}
+
+.jail-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10002;
+    animation: fadeIn 0.3s ease;
+}
+
+.jail-modal-content {
+    background: linear-gradient(135deg, #2e2e2e, #1a1a1a);
+    border-radius: 20px;
+    padding: 25px 30px;
+    min-width: 400px;
+    max-width: 500px;
+    text-align: center;
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    animation: slideIn 0.3s ease;
+}
+
+.jail-modal-content h3 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #ffd700;
+    text-shadow: 2px 2px 0 #8b0000;
+}
+
+.jail-player-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    margin: 15px 0;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+
+.jail-info {
+    font-size: 14px;
+    color: #ffaa00;
+    margin-bottom: 20px;
+}
+
+.jail-options {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.jail-btn-roll, .jail-btn-pay, .jail-btn-sell {
+    background: linear-gradient(135deg, #ffd700, #ffaa00);
+    color: #8b0000;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 120px;
+}
+
+.jail-btn-pay {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    color: #ffd700;
+}
+
+.jail-btn-sell {
+    background: linear-gradient(135deg, #8b0000, #6b0000);
+    color: #ffd700;
+}
+
+.jail-btn-roll:hover, .jail-btn-pay:hover, .jail-btn-sell:hover {
+    transform: scale(1.05);
+}
+
+.jail-hint {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #444;
+}
+
+.jail-properties-list {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #0d2b0d;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    text-align: left;
+}
+
+.jail-property-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 5px;
+    background: #1b4d1b;
+    border-radius: 8px;
+    color: white;
+}
+
+.jail-property-name {
+    flex: 1;
+}
+
+.jail-property-price {
+    color: #ffd700;
+    font-size: 12px;
+    margin: 0 10px;
+}
+
+.jail-sell-property-btn {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.jail-sell-property-btn:hover {
+    background: #ffaa00;
+}
+
+.player-token {
+    background: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 50% !important;
+    backdrop-filter: blur(2px);
+    transition: all 0.3s ease;
+    z-index: 100;
+    pointer-events: none;
+    font-size: 30px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #2e7d32;
+    color: #ffd700;
+    padding: 12px 20px;
+    border-radius: 12px;
+    border-left: 5px solid #ffd700;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 10001;
+    animation: slideInRight 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+    pointer-events: none;
+    max-width: 350px;
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; }
+}
+
+.purchase-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10002;
+}
+
+.purchase-modal-content {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 20px;
+    padding: 25px 30px;
+    min-width: 350px;
+    text-align: center;
+    border: 3px solid #ffd700;
+}
+
+.purchase-modal-content h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.purchase-property-name {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    margin: 15px 0;
+}
+
+.purchase-price {
+    font-size: 36px;
+    font-weight: bold;
+    color: #ffd700;
+    margin: 10px 0;
+}
+
+.purchase-player-money {
+    font-size: 16px;
+    color: #90EE90;
+    margin: 10px 0;
+    padding: 8px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+
+.purchase-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.purchase-btn-buy {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 12px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+.purchase-btn-cancel {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 12px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+}
+
+.purchase-color-strip {
+    width: 80px;
+    height: 8px;
+    margin: 10px auto;
+    border-radius: 4px;
+}
+
+.color-strip-brown { background: #8B4513; }
+.color-strip-lightblue { background: #87CEEB; }
+.color-strip-orange { background: #FFA500; }
+.color-strip-bronze { background: #CD7F32; }
+.color-strip-bomz { background: #4a6741; }
+.color-strip-yellow { background: #FFD700; }
+.color-strip-butelka { background: #2E8B57; }
+.color-strip-purple { background: #9370DB; }
+.color-strip-lime { background: #32CD32; }
+.color-strip-brightblue { background: #00BFFF; }
+.color-strip-red { background: #DC143C; }
+
+.board-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+    background: rgba(0,0,0,0.7);
+    padding: 10px 15px;
+    border-radius: 50px;
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    border: 1px solid #ffd700;
+}
+
+.control-btn {
+    background: #2e7d32;
+    color: #ffd700;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.control-btn.reset {
+    background: #8b0000;
+}
+
+.zoom-value {
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: bold;
+    background: rgba(0,0,0,0.5);
+    padding: 0 10px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    min-width: 60px;
+    justify-content: center;
+}
+
+/* ========== RESPONSIVE LENTA ========== */
+@media (max-width: 1920px) {
+    .horizontal-cell {
+        width: clamp(45px, 6vw, 80px);
+        height: clamp(70px, 10vw, 130px);
+    }
+    .vertical-cell {
+        width: clamp(70px, 10vw, 130px);
+        height: clamp(45px, 6vw, 80px);
+    }
+    .corner {
+        width: clamp(70px, 10vw, 130px);
+        height: clamp(70px, 10vw, 130px);
+    }
+    .cell-number {
+        font-size: clamp(9px, 1.8vw, 14px);
+        width: clamp(18px, 3vw, 28px);
+        height: clamp(18px, 3vw, 28px);
+    }
+    .cell-name {
+        font-size: clamp(6px, 1.2vw, 9px);
+    }
+    .cell-price {
+        font-size: clamp(8px, 1.2vw, 10px);
+    }
+    .start-icon {
+        font-size: clamp(24px, 5vw, 32px);
+    }
+    .start-name {
+        font-size: clamp(9px, 1.5vw, 12px);
+    }
+    .jail-name {
+        font-size: clamp(9px, 1.5vw, 11px);
+    }
+    .jail-subtitle {
+        font-size: clamp(12px, 2vw, 16px);
+    }
+    .parking-sign {
+        font-size: clamp(18px, 4vw, 28px);
+    }
+    .parking-car {
+        font-size: clamp(12px, 2.5vw, 18px);
+    }
+    .go-to-jail-name {
+        font-size: clamp(8px, 1.2vw, 11px);
+    }
+    .go-to-jail-icon {
+        font-size: clamp(16px, 3vw, 24px);
+    }
+    .wrench-cross-left, .wrench-cross-right {
+        font-size: clamp(24px, 5vw, 36px);
+    }
+    .plane-icon, .devil-icon, .lightning-icon, .beer-icon,
+    .water-icon, .hospital-icon, .treasure-icon, .vacation-icon,
+    .birthday-icon, .tax-icon, .chance-icon {
+        font-size: clamp(22px, 4.5vw, 32px);
+    }
+}
+
+/* Viso ekrano režimas - vientisa lenta */
+.fullscreen-mode {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #1a3a1a;
+    z-index: 9999;
+    overflow: auto;
+    padding: 10px;
+}
+
+.fullscreen-mode .game-board {
+    transform: scale(1);
+    width: auto;
+    height: auto;
+    display: inline-block;
+    background: #2e7d32;
+    padding: 20px;
+}
+
+.fullscreen-mode .game-board-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.fullscreen-mode .board-container {
+    transform: scale(1);
+}
+
+.fullscreen-mode .horizontal-cell {
+    width: 70px;
+    height: 110px;
+}
+
+.fullscreen-mode .vertical-cell {
+    width: 110px;
+    height: 70px;
+}
+
+.fullscreen-mode .corner {
+    width: 110px;
+    height: 110px;
+}
+
+.fullscreen-mode .cell-number {
+    font-size: 12px;
+    width: 24px;
+    height: 24px;
+}
+
+.fullscreen-mode .cell-name {
+    font-size: 8px;
+}
+
+.fullscreen-mode .cell-price {
+    font-size: 9px;
+}
+
+.fullscreen-mode .board-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+}
+
+.fullscreen-mode .draggable-log {
+    z-index: 10001;
+}
+
+@media (min-width: 1600px) {
+    .fullscreen-mode .horizontal-cell {
+        width: 85px;
+        height: 135px;
+    }
+    .fullscreen-mode .vertical-cell {
+        width: 135px;
+        height: 85px;
+    }
+    .fullscreen-mode .corner {
+        width: 135px;
+        height: 135px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .fullscreen-mode .horizontal-cell {
+        width: 55px;
+        height: 90px;
+    }
+    .fullscreen-mode .vertical-cell {
+        width: 90px;
+        height: 55px;
+    }
+    .fullscreen-mode .corner {
+        width: 90px;
+        height: 90px;
+    }
+}
+
+/* ========== STATISTIKOS PANELĖS SLAUGYMAS ========== */
+#statsContent {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+#statsContent.hidden {
+    display: none;
+}
+
+.stats-panel {
+    transition: all 0.3s ease;
+}
+
+.stats-panel.collapsed {
+    padding-bottom: 10px;
+}
+
+/* ========== STATISTIKOS PANELĖS TEMPIMAS ========== */
+.stats-panel {
+    position: relative;
+    cursor: default;
+}
+
+.stats-panel.dragging {
+    opacity: 0.8;
+    cursor: grabbing;
+}
+
+.stats-header {
+    cursor: grab;
+    user-select: none;
+}
+
+.stats-header:active {
+    cursor: grabbing;
+}
+
+/* ========== NUSTATYMŲ MODALAS ========== */
+.settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10020;
+    animation: fadeIn 0.3s ease;
+}
+
+.settings-modal-content {
+    background: linear-gradient(135deg, #1b4d1b, #0d2b0d);
+    border-radius: 20px;
+    padding: 25px;
+    min-width: 350px;
+    text-align: center;
+    border: 3px solid #ffd700;
+    animation: slideIn 0.3s ease;
+}
+
+.settings-modal-content h2 {
+    color: #ffd700;
+    margin-bottom: 20px;
+}
+
+.settings-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+    padding: 10px;
+    background: #0d2b0d;
+    border-radius: 10px;
+}
+
+.settings-section label {
+    color: white;
+    font-size: 16px;
+}
+
+.settings-btn {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.settings-btn:hover {
+    transform: scale(1.05);
+}
+
+.settings-close-btn {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.2s;
+}
+
+.settings-close-btn:hover {
+    transform: scale(1.05);
+    background: #ffaa00;
+}
+
+/* ========== RATUKO NUSTATYMAI ========== */
+#settingsWheel {
+    z-index: 10000 !important;
+    position: absolute;
+}
+
+/* Normalaus dydžio atstatymas */
+.game-board.normal-size {
+    transform: scale(1) !important;
+    transition: transform 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 1100px) {
+    .game-layout { flex-direction: column; align-items: center; }
+    .stats-panel { width: 90%; max-width: 500px; }
+    .right-panels { width: 100%; align-items: center; }
+    .draggable-log { max-width: 95vw; }
+}
+
+@media (max-width: 900px) {
+    .game-board { padding: 15px; }
+    h1 { font-size: 1.8rem; }
+    .floating-cards-container .player-card { width: 220px; }
+    .player-token { font-size: 16px; width: 22px; height: 22px; }
+    .draggable-log { width: 280px; min-width: 200px; }
+    .log-list { height: auto; }
+    .log-resize-handle { width: 12px; height: 12px; }
+    .jail-modal-content { min-width: 280px; padding: 20px; }
+    .jail-modal-content h3 { font-size: 22px; }
+    .jail-player-name { font-size: 18px; }
+    .jail-btn-roll, .jail-btn-pay, .jail-btn-sell { padding: 8px 15px; font-size: 14px; }
+    .choice-card { width: 150px; height: 210px; }
+    .choice-card-front { font-size: 40px; }
+    .choice-card-back { font-size: 11px; }
+    .trade-modal-content, .trade-modal-large-content { padding: 15px; }
+    .trade-players { flex-direction: column; }
+    .trade-arrow { transform: rotate(90deg); }
+    .trade-proposal-details { flex-direction: column; }
+    .trade-proposal-arrow { transform: rotate(90deg); }
+    .card-resize-handle { width: 10px; height: 10px; }
+    .build-modal-content { min-width: 280px; padding: 20px; }
+    .build-current { font-size: 20px; }
+    .cell-price { font-size: 8px; }
+    .cell-owner-token { font-size: 18px; }
+    .right-col .vertical-cell .cell-number,
+    .left-col .vertical-cell .cell-number {
+        font-size: 10px;
+        padding: 3px;
+    }
+    .right-col .vertical-cell .cell-price,
+    .left-col .vertical-cell .cell-price {
+        font-size: 8px;
+    }
+    .prop-mini-card {
+        width: 28px;
+        height: 28px;
+    }
+    .prop-mini-icon {
+        font-size: 14px;
+    }
+    .prop-hover-card {
+        width: 150px;
+    }
+    .prop-hover-icon {
+        font-size: 24px;
+    }
+    .prop-hover-name {
+        font-size: 12px;
+    }
+    .prop-hover-price, .prop-hover-position, .prop-hover-houses {
+        font-size: 11px;
+    }
+    .settings-modal-content {
+        min-width: 90vw;
+        padding: 15px;
+    }
+    .settings-section label {
+        font-size: 14px;
+    }
+    .settings-btn {
+        padding: 6px 15px;
+        font-size: 12px;
+    }
+}
+
+/* ==================== BANKROTO MYGTUKAS ==================== */
+.control-btn.bankrupt-btn {
+    background: #8b0000;
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.control-btn.bankrupt-btn:hover {
+    background: #ff0000;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px red;
+}
+
+/* ==================== SKOLOS MODALAS ==================== */
+.debt-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10030;
+    animation: fadeIn 0.3s ease;
+}
+
+.debt-modal-content {
+    background: linear-gradient(135deg, #2e2e2e, #1a1a1a);
+    border-radius: 20px;
+    padding: 25px;
+    min-width: 500px;
+    max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+    text-align: center;
+    border: 3px solid #ffd700;
+    animation: slideIn 0.3s ease;
+}
+
+.debt-modal-content h3 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.debt-player-name {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+
+.debt-amount {
+    font-size: 18px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #0d2b0d;
+    border-radius: 10px;
+    color: #ddd;
+}
+
+.debt-amount span {
+    font-weight: bold;
+    font-size: 22px;
+}
+
+.debt-amount strong {
+    color: #ff6666;
+    font-size: 24px;
+}
+
+.debt-section h4 {
+    color: #ffd700;
+    margin: 15px 0 10px;
+    text-align: left;
+}
+
+.debt-properties-list {
+    max-height: 300px;
+    overflow-y: auto;
+    background: #0d2b0d;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.debt-property-item {
+    background: #1b4d1b;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #4caf50;
+}
+
+.debt-property-info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.debt-property-name {
+    font-weight: bold;
+    color: #ffd700;
+    font-size: 16px;
+}
+
+.debt-property-value {
+    color: #90EE90;
+    font-size: 14px;
+}
+
+.debt-property-houses {
+    color: #ffaa00;
+    font-size: 14px;
+}
+
+.debt-property-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.debt-action-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.debt-action-btn:hover {
+    transform: scale(1.02);
+}
+
+.pledge-btn {
+    background: #ffd700;
+    color: #8b0000;
+}
+
+.sell-btn {
+    background: #2e7d32;
+    color: #ffd700;
+}
+
+.trade-btn {
+    background: #4caf50;
+    color: white;
+}
+
+.destroy-btn {
+    background: #ff6600;
+    color: white;
+}
+
+.debt-warning {
+    color: #ffaa00;
+    font-size: 11px;
+    margin-left: 10px;
+}
+
+.debt-pledged-text {
+    color: #ff6666;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.debt-pledged-badge {
+    background: #8b0000;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    color: #ffd700;
+}
+
+.debt-no-properties {
+    color: #aaa;
+    text-align: center;
+    padding: 20px;
+}
+
+.debt-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.debt-bankrupt-btn {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 12px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.debt-bankrupt-btn:hover {
+    background: #ff0000;
+    transform: scale(1.05);
+}
+
+.debt-hint {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #444;
+    text-align: left;
+}
+
+/* ==================== ĮKEITIMO MODALAS ==================== */
+.pledge-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10031;
+    animation: fadeIn 0.3s ease;
+}
+
+.pledge-modal-content {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 20px;
+    padding: 25px;
+    min-width: 450px;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+    text-align: center;
+    border: 3px solid #ffd700;
+}
+
+.pledge-modal-content h3 {
+    font-size: 26px;
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.pledge-player-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.pledge-money {
+    font-size: 16px;
+    color: #90EE90;
+    margin-bottom: 20px;
+}
+
+.pledge-section h4 {
+    color: #ffd700;
+    margin: 15px 0 10px;
+    text-align: left;
+}
+
+.pledge-properties-list, .pledge-pledged-list {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #0d2b0d;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.pledge-property-item {
+    background: #1b4d1b;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.pledge-property-info {
+    flex: 1;
+    text-align: left;
+}
+
+.pledge-property-name {
+    font-weight: bold;
+    color: #ffd700;
+    display: block;
+}
+
+.pledge-property-value, .pledge-property-pledge-value, .pledge-property-redeem-cost {
+    font-size: 12px;
+    color: #ddd;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.pledge-property-houses {
+    color: #ffaa00;
+    font-size: 12px;
+}
+
+.pledge-action-btn {
+    padding: 6px 15px;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pledge-action-btn:hover {
+    transform: scale(1.02);
+}
+
+.pledge-btn {
+    background: #ffd700;
+    color: #8b0000;
+}
+
+.redeem-btn {
+    background: #4caf50;
+    color: white;
+}
+
+.pledge-warning {
+    color: #ffaa00;
+    font-size: 10px;
+    margin-top: 5px;
+}
+
+.pledge-no-properties {
+    color: #aaa;
+    text-align: center;
+    padding: 15px;
+}
+
+.pledge-close-btn {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.pledge-hint {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #4caf50;
+    text-align: left;
+}
+
+/* ==================== PARDAVIMO BANKUI MODALAS ==================== */
+.sell-to-bank-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10032;
+    animation: fadeIn 0.3s ease;
+}
+
+.sell-to-bank-modal-content {
+    background: linear-gradient(135deg, #2e2e2e, #1a1a1a);
+    border-radius: 20px;
+    padding: 25px;
+    min-width: 450px;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+    text-align: center;
+    border: 3px solid #ffd700;
+}
+
+.sell-to-bank-modal-content h3 {
+    font-size: 26px;
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.sell-player-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.sell-money {
+    font-size: 16px;
+    color: #90EE90;
+    margin-bottom: 20px;
+}
+
+.sell-section h4 {
+    color: #ffd700;
+    margin: 15px 0 10px;
+    text-align: left;
+}
+
+.sell-properties-list {
+    max-height: 300px;
+    overflow-y: auto;
+    background: #0d2b0d;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.sell-property-item {
+    background: #1b4d1b;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.sell-property-info {
+    flex: 1;
+    text-align: left;
+}
+
+.sell-property-name {
+    font-weight: bold;
+    color: #ffd700;
+    display: block;
+}
+
+.sell-property-value, .sell-property-sell-value {
+    font-size: 12px;
+    color: #ddd;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.sell-property-houses {
+    color: #ffaa00;
+    font-size: 12px;
+}
+
+.sell-action-btn {
+    padding: 6px 15px;
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sell-action-btn:hover {
+    transform: scale(1.02);
+}
+
+.sell-pledged-warning {
+    color: #ff6666;
+    font-size: 11px;
+}
+
+.sell-no-properties {
+    color: #aaa;
+    text-align: center;
+    padding: 15px;
+}
+
+.sell-close-btn {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.sell-hint {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #444;
+    text-align: left;
+}
+
+/* ==================== NAMELIŲ GRIOVIMO MODALAS ==================== */
+.destroy-houses-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10033;
+    animation: fadeIn 0.3s ease;
+}
+
+.destroy-houses-modal-content {
+    background: linear-gradient(135deg, #2e2e2e, #1a1a1a);
+    border-radius: 20px;
+    padding: 25px;
+    min-width: 450px;
+    max-width: 600px;
+    max-height: 85vh;
+    overflow-y: auto;
+    text-align: center;
+    border: 3px solid #ffd700;
+}
+
+.destroy-houses-modal-content h3 {
+    font-size: 26px;
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.destroy-player-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.destroy-money {
+    font-size: 16px;
+    color: #90EE90;
+    margin-bottom: 20px;
+}
+
+.destroy-section h4 {
+    color: #ffd700;
+    margin: 15px 0 10px;
+    text-align: left;
+}
+
+.destroy-properties-list {
+    max-height: 300px;
+    overflow-y: auto;
+    background: #0d2b0d;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.destroy-property-item {
+    background: #1b4d1b;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.destroy-property-info {
+    flex: 1;
+    text-align: left;
+}
+
+.destroy-property-name {
+    font-weight: bold;
+    color: #ffd700;
+    display: block;
+}
+
+.destroy-property-houses {
+    font-size: 14px;
+    color: #ffaa00;
+}
+
+.destroy-property-refund {
+    font-size: 12px;
+    color: #90EE90;
+}
+
+.destroy-action-btn {
+    padding: 6px 15px;
+    background: #ff6600;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.destroy-action-btn:hover {
+    transform: scale(1.02);
+    background: #ff8800;
+}
+
+.destroy-close-btn {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.destroy-hint {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #444;
+    text-align: left;
+}
+
+/* ==================== ŽAIDĖJO KORTELĖS PAPILDOMI MYGTUKAI ==================== */
+.player-extra-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 10px 0;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+.player-extra-btn {
+    flex: 1;
+    min-width: 70px;
+    padding: 5px 8px;
+    border: none;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.player-extra-btn:hover {
+    transform: scale(1.02);
+}
+
+.pledge-extra-btn {
+    background: #ffd700;
+    color: #8b0000;
+}
+
+.sellbank-extra-btn {
+    background: #2e7d32;
+    color: #ffd700;
+}
+
+.destroy-extra-btn {
+    background: #ff6600;
+    color: white;
+}
+
+/* ==================== SKOLOS INDIKATORIUS ==================== */
+.player-debt-indicator {
+    background: #8b0000;
+    color: #ffd700;
+    padding: 5px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 5px;
+    animation: debtPulse 1s ease-in-out infinite;
+}
+
+@keyframes debtPulse {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.02); box-shadow: 0 0 5px red; }
+}
+
+/* ==================== ĮKEISTŲ NUOSAVYBIŲ MARKERIS LENTOJE ==================== */
+.cell[data-pledged="true"]::after {
+    content: "🔒";
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 12px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    padding: 2px;
+}
+
+/* ==================== PLEDGED MINI KORTELĖS STILIUS ==================== */
+.prop-mini-card.pledged-mini {
+    opacity: 0.7;
+    border-color: #ff6666;
+}
+
+.prop-tooltip-pledged {
+    color: #ff6666;
+    font-size: 10px;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+.prop-hover-pledged {
+    color: #ff6666;
+    font-size: 11px;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+/* ========== BANKROTO PATVIRTINIMO MODALAS ========== */
+.bankrupt-confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10050;
+    animation: fadeIn 0.3s ease;
+}
+
+.bankrupt-confirm-content {
+    background: linear-gradient(135deg, #2e2e2e, #1a1a1a);
+    border-radius: 20px;
+    padding: 30px;
+    min-width: 400px;
+    text-align: center;
+    border: 3px solid #ff0000;
+    animation: slideIn 0.3s ease;
+}
+
+.bankrupt-confirm-content h3 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #ff0000;
+    text-shadow: 0 0 5px darkred;
+}
+
+.bankrupt-confirm-player {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+
+.bankrupt-confirm-message {
+    font-size: 18px;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.bankrupt-confirm-warning {
+    font-size: 14px;
+    color: #ff6666;
+    margin-bottom: 25px;
+    padding: 10px;
+    background: rgba(255,0,0,0.2);
+    border-radius: 10px;
+}
+
+.bankrupt-confirm-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.bankrupt-confirm-yes {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.bankrupt-confirm-yes:hover {
+    background: #ff0000;
+    transform: scale(1.05);
+}
+
+.bankrupt-confirm-no {
+    background: #2e7d32;
+    color: #ffd700;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.bankrupt-confirm-no:hover {
+    background: #4caf50;
+    transform: scale(1.05);
+}
+
+/* ========== LAIMĖTOJO PATVIRTINIMO MODALAS ========== */
+.winner-confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10060;
+    animation: fadeIn 0.3s ease;
+}
+
+.winner-confirm-content {
+    background: linear-gradient(135deg, #ffd700, #ffaa00);
+    border-radius: 20px;
+    padding: 30px;
+    min-width: 400px;
+    text-align: center;
+    border: 3px solid #8b0000;
+    animation: slideIn 0.3s ease;
+}
+
+.winner-confirm-content h3 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #8b0000;
+    text-shadow: 2px 2px 0 #ffd700;
+}
+
+.winner-confirm-player {
+    font-size: 28px;
+    font-weight: bold;
+    color: #8b0000;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 15px;
+}
+
+.winner-confirm-message {
+    font-size: 20px;
+    color: #8b0000;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+
+.winner-confirm-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.winner-confirm-yes {
+    background: #2e7d32;
+    color: #ffd700;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.winner-confirm-yes:hover {
+    background: #4caf50;
+    transform: scale(1.05);
+}
+
+.winner-confirm-no {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.winner-confirm-no:hover {
+    background: #ff0000;
+    transform: scale(1.05);
+}
+
+/* ========== NAUJO ŽAIDIMO PATVIRTINIMO MODALAS ========== */
+.reset-confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10070;
+    animation: fadeIn 0.3s ease;
+}
+
+.reset-confirm-content {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 20px;
+    padding: 30px;
+    min-width: 400px;
+    text-align: center;
+    border: 3px solid #ffd700;
+    animation: slideIn 0.3s ease;
+}
+
+.reset-confirm-content h3 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #ffd700;
+}
+
+.reset-confirm-message {
+    font-size: 18px;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.reset-confirm-warning {
+    font-size: 14px;
+    color: #ff6666;
+    margin-bottom: 25px;
+    padding: 10px;
+    background: rgba(255,0,0,0.2);
+    border-radius: 10px;
+}
+
+.reset-confirm-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.reset-confirm-yes {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.reset-confirm-yes:hover {
+    background: #ffaa00;
+    transform: scale(1.05);
+}
+
+.reset-confirm-no {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.reset-confirm-no:hover {
+    background: #ff0000;
+    transform: scale(1.05);
+}
+
+/* ========== ĮKELIMO ŽAIDIMO PATVIRTINIMO MODALAS ========== */
+.load-confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10080;
+    animation: fadeIn 0.3s ease;
+}
+
+.load-confirm-content {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 20px;
+    padding: 30px;
+    min-width: 400px;
+    text-align: center;
+    border: 3px solid #ffd700;
+    animation: slideIn 0.3s ease;
+}
+
+.load-confirm-content h3 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #ffd700;
+}
+
+.load-confirm-message {
+    font-size: 18px;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.load-confirm-question {
+    font-size: 20px;
+    color: #ffd700;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+
+.load-confirm-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.load-confirm-yes {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.load-confirm-yes:hover {
+    background: #ffaa00;
+    transform: scale(1.05);
+}
+
+.load-confirm-no {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.load-confirm-no:hover {
+    background: #ff0000;
+    transform: scale(1.05);
+}
+
+/* ========== INFORMACINĖ KORTELĖ ========== */
+.info-card {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border: 3px solid #ffd700;
+    border-radius: 20px;
+    padding: 20px 30px;
+    min-width: 300px;
+    max-width: 400px;
+    text-align: center;
+    z-index: 10090;
+    animation: fadeIn 0.3s ease, slideIn 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.info-card-content h4 {
+    color: #ffd700;
+    font-size: 22px;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 0 #8b0000;
+}
+
+.info-card-player {
+    color: white;
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.info-card-message {
+    color: #ddd;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.info-card-ok {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 8px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.info-card-ok:hover {
+    transform: scale(1.05);
+    background: #ffaa00;
+}
+
+/* ========== ĮKEITIMO PATVIRTINIMO MODALAS ========== */
+.pledge-confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10100;
+    animation: fadeIn 0.3s ease;
+}
+
+.pledge-confirm-content {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 20px;
+    padding: 30px;
+    min-width: 350px;
+    text-align: center;
+    border: 3px solid #ffd700;
+    animation: slideIn 0.3s ease;
+}
+
+.pledge-confirm-content h3 {
+    font-size: 26px;
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.pledge-confirm-property {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.pledge-confirm-value {
+    font-size: 18px;
+    color: #90EE90;
+    margin-bottom: 10px;
+}
+
+.pledge-confirm-warning {
+    font-size: 14px;
+    color: #ffaa00;
+    margin-bottom: 20px;
+}
+
+.pledge-confirm-message {
+    font-size: 16px;
+    color: white;
+    margin-bottom: 25px;
+}
+
+.pledge-confirm-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.pledge-confirm-yes {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pledge-confirm-yes:hover {
+    background: #ffaa00;
+    transform: scale(1.05);
+}
+
+.pledge-confirm-no {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pledge-confirm-no:hover {
+    background: #ff0000;
+    transform: scale(1.05);
+}
+
+/* ========== INFORMACINĖ KORTELĖ ========== */
+.info-card {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border: 3px solid #ffd700;
+    border-radius: 20px;
+    padding: 20px 30px;
+    min-width: 300px;
+    max-width: 400px;
+    text-align: center;
+    z-index: 10090;
+    animation: fadeIn 0.3s ease, slideIn 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.info-card-content h4 {
+    color: #ffd700;
+    font-size: 22px;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 0 #8b0000;
+}
+
+.info-card-player {
+    color: white;
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.info-card-message {
+    color: #ddd;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.info-card-ok {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 8px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.info-card-ok:hover {
+    transform: scale(1.05);
+    background: #ffaa00;
+}
+
+/* ========== CHATO STILIUS ========== */
+.draggable-chat {
+    position: fixed;
+    width: 320px;
+    min-width: 250px;
+    min-height: 300px;
+    max-width: 90vw;
+    max-height: 80vh;
+    background: #1b4d1b;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    border: 2px solid #ffd700;
+    display: flex;
+    flex-direction: column;
+    z-index: 2000;
+    backdrop-filter: blur(2px);
+    cursor: default;
+    transition: box-shadow 0.2s;
+    overflow: visible;
+}
+
+.draggable-chat.dragging {
+    opacity: 0.85;
+    cursor: grabbing;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: #0d2b0d;
+    border-radius: 13px 13px 0 0;
+    border-bottom: 1px solid #ffd700;
+    cursor: grab;
+}
+
+.draggable-chat.dragging .chat-header {
+    cursor: grabbing;
+}
+
+.chat-header span {
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.chat-drag-btn, .chat-clear-btn {
+    background: #2e7d32;
+    color: #ffd700;
+    border: 2px solid #ffd700;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 5px;
+    transition: all 0.2s;
+}
+
+.chat-drag-btn:hover, .chat-clear-btn:hover {
+    background: #4caf50;
+    transform: scale(1.05);
+}
+
+.chat-messages-list {
+    flex: 1;
+    overflow-y: auto;
+    background: #0d2b0d;
+    padding: 8px;
+    font-family: monospace;
+    font-size: 12px;
+    min-height: 150px;
+    max-height: 250px;
+}
+
+.chat-message {
+    padding: 6px 10px;
+    margin-bottom: 5px;
+    border-radius: 12px;
+    word-break: break-word;
+    animation: fadeInUp 0.2s ease;
+}
+
+.chat-message.player {
+    background: #2e7d32;
+    color: #ffd700;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.chat-message.system {
+    background: #8b0000;
+    color: #ffd700;
+    text-align: center;
+    font-style: italic;
+    font-size: 11px;
+}
+
+.chat-message .player-name {
+    font-weight: bold;
+    color: #ffaa00;
+    margin-right: 8px;
+}
+
+.chat-emoji-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 8px;
+    background: #0d2b0d;
+    border-top: 1px solid #2e7d32;
+}
+
+.chat-emoji-btn {
+    background: #2e7d32;
+    color: #ffd700;
+    border: 1px solid #ffd700;
+    border-radius: 20px;
+    padding: 4px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chat-emoji-btn:hover {
+    background: #4caf50;
+    transform: scale(1.05);
+}
+
+.chat-input-container {
+    display: flex;
+    padding: 8px;
+    gap: 8px;
+    border-top: 1px solid #4caf50;
+    background: #0d2b0d;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ffd700;
+    border-radius: 20px;
+    background: #1b4d1b;
+    color: #ffd700;
+    font-size: 12px;
+    outline: none;
+}
+
+.chat-input::placeholder {
+    color: #8bc34a;
+}
+
+.chat-send-btn {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chat-send-btn:hover {
+    background: #ffaa00;
+    transform: scale(1.02);
+}
+
+.chat-resize-handle {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #ffd700;
+    border-radius: 50%;
+    border: 2px solid #1b4d1b;
+    cursor: nw-resize;
+    z-index: 2001;
+    transition: transform 0.1s;
+}
+
+.chat-resize-handle:hover {
+    transform: scale(1.2);
+    background: #ffaa00;
+}
+
+.chat-resize-handle.tl {
+    top: -8px;
+    left: -8px;
+    cursor: nw-resize;
+}
+
+.chat-resize-handle.tr {
+    top: -8px;
+    right: -8px;
+    cursor: ne-resize;
+}
+
+.chat-resize-handle.bl {
+    bottom: -8px;
+    left: -8px;
+    cursor: sw-resize;
+}
+
+.chat-resize-handle.br {
+    bottom: -8px;
+    right: -8px;
+    cursor: se-resize;
+}
+
+/* ========== PARDAVIMO PASIRINKIMO MODALAS ========== */
+.sell-options-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10035;
+    animation: fadeIn 0.3s ease;
+}
+
+.sell-options-modal-content {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 20px;
+    padding: 25px;
+    min-width: 350px;
+    text-align: center;
+    border: 3px solid #ffd700;
+    animation: slideIn 0.3s ease;
+}
+
+.sell-options-modal-content h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #ffd700;
+}
+
+.sell-options-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.sell-option-bank-btn {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sell-option-bank-btn:hover {
+    background: #ffaa00;
+    transform: scale(1.02);
+}
+
+.sell-option-player-btn {
+    background: #4caf50;
+    color: #ffd700;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sell-option-player-btn:hover {
+    background: #6fbf6f;
+    transform: scale(1.02);
+}
+
+.sell-option-cancel-btn {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+}
+
+.sell-option-cancel-btn:hover {
+    background: #ff0000;
+    transform: scale(1.02);
+}
+
+.sell-options-hint {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #4caf50;
+    text-align: left;
+}
+
+/* Statybos mygtuko animacija */
+.build-icon {
+    animation: buildPulse 1s ease-in-out infinite;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.build-icon:hover {
+    transform: scale(1.1);
+}
+
+@keyframes buildPulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 5px gold; }
+}
+
+/* ========== PARDAVIMO PATVIRTINIMO MODALAS ========== */
+.sell-confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10110;
+    animation: fadeIn 0.3s ease;
+}
+
+.sell-confirm-modal-content {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 20px;
+    padding: 25px;
+    min-width: 350px;
+    text-align: center;
+    border: 3px solid #ffd700;
+    animation: slideIn 0.3s ease;
+}
+
+.sell-confirm-modal-content h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.sell-confirm-property {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.sell-confirm-value {
+    font-size: 18px;
+    color: #90EE90;
+    margin-bottom: 10px;
+}
+
+.sell-confirm-warning {
+    font-size: 14px;
+    color: #ffaa00;
+    margin-bottom: 20px;
+}
+
+.sell-confirm-message {
+    font-size: 16px;
+    color: white;
+    margin-bottom: 25px;
+}
+
+.sell-confirm-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.sell-confirm-yes {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sell-confirm-yes:hover {
+    background: #ffaa00;
+    transform: scale(1.05);
+}
+
+.sell-confirm-no {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sell-confirm-no:hover {
+    background: #ff0000;
+    transform: scale(1.05);
+}
+
+/* ========== GRIAVIMO PATVIRTINIMO MODALAS ========== */
+.destroy-confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10120;
+    animation: fadeIn 0.3s ease;
+}
+
+.destroy-confirm-content {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 20px;
+    padding: 25px;
+    min-width: 350px;
+    text-align: center;
+    border: 3px solid #ffd700;
+    animation: slideIn 0.3s ease;
+}
+
+.destroy-confirm-content h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.destroy-confirm-property {
+    font-size: 22px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 15px;
+}
+
+.destroy-confirm-value {
+    font-size: 18px;
+    color: #90EE90;
+    margin-bottom: 20px;
+}
+
+.destroy-confirm-message {
+    font-size: 16px;
+    color: white;
+    margin-bottom: 25px;
+}
+
+.destroy-confirm-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.destroy-confirm-yes {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.destroy-confirm-yes:hover {
+    background: #ffaa00;
+    transform: scale(1.05);
+}
+
+.destroy-confirm-no {
+    background: #8b0000;
+    color: #ffd700;
+    border: none;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.destroy-confirm-no:hover {
+    background: #ff0000;
+    transform: scale(1.05);
+}
+
+/* Chato apačios kampų apvalinimas */
+.draggable-chat {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.draggable-chat .chat-messages-list {
+    border-radius: 0;
+}
+
+.draggable-chat .chat-emoji-bar {
+    border-radius: 0;
+}
+
+.draggable-chat .chat-input-container {
+    border-radius: 0 0 13px 13px;
+}
+
+/* Paslėpti skaičius ant visų specialių ir kampinių langelių */
+#cell-3 .cell-number, #cell-5 .cell-number, #cell-6 .cell-number, #cell-9 .cell-number,
+#cell-13 .cell-number, #cell-17 .cell-number, #cell-20 .cell-number, #cell-22 .cell-number,
+#cell-27 .cell-number, #cell-30 .cell-number, #cell-33 .cell-number, #cell-35 .cell-number,
+#cell-37 .cell-number, #cell-41 .cell-number, #cell-44 .cell-number, #cell-47 .cell-number,
+#cell-1 .cell-number, #cell-15 .cell-number, #cell-25 .cell-number, #cell-39 .cell-number {
+    display: none !important;
+}
+
+/* Užtikrinti, kad kortelės kampai matytųsi */
+.player-card {
+    overflow: visible !important;
+}
+
+.card-resize-handles {
+    overflow: visible !important;
+}
+
+.card-resize-handle {
+    z-index: 99999 !important;
+}
+
+/* Leisti kamuoliukams matytis už kortelės ribų */
+.player-card {
+    overflow: visible !important;
+}
+
+.card-resize-handles {
+    overflow: visible !important;
+}
+
+/* Padaryti kamuoliukus ryškiai matomus */
+.card-resize-handle {
+    background: #ff0000 !important;
+    width: 18px !important;
+    height: 18px !important;
+    border: 2px solid yellow !important;
+    box-shadow: 0 0 5px black !important;
+}
+
+/* Užtikrinti, kad kortelės kamuoliukai matytųsi */
+.card-resize-handle {
+    display: none;
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #ffd700;
+    border: 2px solid #1b4d1b;
+    border-radius: 50%;
+    cursor: nw-resize;
+    z-index: 99999;
+}
+
+.card-resize-handle.tl { top: -8px; left: -8px; cursor: nw-resize; }
+.card-resize-handle.tr { top: -8px; right: -8px; cursor: ne-resize; }
+.card-resize-handle.bl { bottom: -8px; left: -8px; cursor: sw-resize; }
+.card-resize-handle.br { bottom: -8px; right: -8px; cursor: se-resize; }
+
+/* Paslėpti dublikatus - palikti tik pirmą kamuoliuką kiekviename kampe */
+.card-resize-handle:not(:first-of-type) {
+    display: none !important;
+}
+
+/* ========== PROPORCINGAS MAŽINIMAS ========== */
+@media (max-width: 1200px) {
+    .horizontal-cell {
+        width: 7vw !important;
+        height: 10vw !important;
+    }
+    .vertical-cell {
+        width: 10vw !important;
+        height: 7vw !important;
+    }
+    .corner {
+        width: 10vw !important;
+        height: 10vw !important;
+    }
+    .cell-number {
+        font-size: 1.2vw !important;
+        width: 2.5vw !important;
+        height: 2.5vw !important;
+    }
+    .cell-name {
+        font-size: 0.8vw !important;
+    }
+    .cell-price {
+        font-size: 0.9vw !important;
+    }
+    .center-left-panel {
+        width: 20vw !important;
+    }
+    .center-right-panel {
+        width: 25vw !important;
+    }
+    .center-dice {
+        width: 6vw !important;
+        height: 6vw !important;
+    }
+}
+
+/* Pakelti lentą aukščiau, kad kauliukai būtų geriau matomi */
+.game-board-wrapper {
+    margin-top: -40px;
+}
+
+@media (max-width: 1200px) {
+    .game-board-wrapper {
+        margin-top: -20px;
+    }
+}
+
+/* Centrinė panelė (kauliukai) – šiek tiek aukščiau */
+.board-center {
+    margin-top: -30px;
+}
+
+/* Jei ekranas mažesnis – grąžinti atgal */
+@media (max-width: 900px) {
+    .board-center {
+        margin-top: 0;
+    }
+    .game-board-wrapper {
+        margin-top: 0;
+    }
+}
+
+/* Sumažinti lentos perteklinį tarpą */
+.game-board {
+    padding: 15px;
+}
+
+.horizontal-cell {
+    width: 75px;
+    height: 120px;
+}
+
+.vertical-cell {
+    width: 120px;
+    height: 75px;
+}
+
+.corner {
+    width: 120px;
+    height: 120px;
+}
+
+.link-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1b4d1b;
+    padding: 25px;
+    border-radius: 20px;
+    border: 3px solid #ffd700;
+    z-index: 20000;
+    text-align: center;
+    min-width: 350px;
+}
+
+.link-modal h3 {
+    color: #ffd700;
+    margin-bottom: 15px;
+}
+
+.link-modal p {
+    color: #ccc;
+    margin: 10px 0;
+}
+
+.link-modal input {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+    background: #0d2b0d;
+    color: #ffd700;
+    text-align: center;
+}
+
+.link-modal button {
+    padding: 8px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.copy-btn {
+    background: #ffd700;
+    color: #8b0000;
+}
+
+.close-btn {
+    background: #8b0000;
+    color: #ffd700;
+}
+
+/* ========== KAULIUKŲ TAŠKŲ SPAUSKOS PATAISYMAS ========== */
+.dice-dot {
+    background: #1a1a2e !important;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.6) !important;
+}
+
+.dice-dot.visible {
+    background: #ffffff !important;
+    box-shadow: 0 0 4px rgba(255,255,255,0.8) !important;
+}
+
+/* ========== KAULIUKŲ TAŠKŲ SPAUSKOS PATAISYMAS ========== */
+.dice-dot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #1a1a2e !important;
+    border-radius: 50%;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.6);
+    display: none;
+}
+
+.dice-dot.visible {
+    display: block !important;
+    background: #000000 !important;  /* ← juoda spalva */
+    box-shadow: 0 0 4px rgba(0,0,0,0.8) !important;
+}
+
+/* ========== KAULIUKŲ TAŠKAI – TINKLELIS SU FIKSUOTU ATSTUMU ========== */
+.dice-dots-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 12px;           /* ← priverstinis atstumas tarp taškų (gali didinti: 8px, 10px) */
+    width: 120%;
+    height: 120%;
+    place-items: center;
+}
+
+.dice-dot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #000000 !important;  /* ← juoda spalva */
+    border-radius: 50%;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.6);
+    display: none;
+}
+
+.dice-dot.visible {
+    display: block;
+}
+
+/* Senų pozicijų (dot-tl, dot-tr ir t.t.) nebereikia – jas galima palikti arba ištrinti – efektas bus tas pats */
+
+/* Toast pranešimai */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    color: #ffd700;
+    padding: 12px 25px;
+    border-radius: 50px;
+    border: 2px solid #ffd700;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 10001;
+    animation: slideDown 0.3s ease, fadeOut 0.5s ease 3s forwards;
+    pointer-events: none;
+    white-space: nowrap;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.toast-notification.success {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-color: #ffd700;
+}
+
+.toast-notification.error {
+    background: linear-gradient(135deg, #8b0000, #6b0000);
+    border-color: #ffd700;
+}
+
+.toast-notification.warning {
+    background: linear-gradient(135deg, #ff9800, #e68a00);
+    border-color: #ffd700;
+    color: #8b0000;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+@media (max-width: 600px) {
+    .toast-notification {
+        font-size: 12px;
+        padding: 8px 15px;
+        white-space: normal;
+        text-align: center;
+        max-width: 90%;
+    }
+}
+/* ========== AUTOMATINIS LANGELIŲ DYDIS PAGAL TEKSTĄ ========== */
+
+/* Pagrindiniai langelių dydžio pakeitimai */
+.cell {
+    width: auto !important;
+    min-width: 70px;
+    max-width: 130px;
+    height: auto !important;
+    min-height: 100px;
+    padding: 8px 4px;
+}
+
+/* Horizontalūs langeliai (viršus ir apačia) */
+.horizontal-cell {
+    width: auto !important;
+    min-width: 75px;
+    max-width: 115px;
+    height: auto !important;
+    min-height: 120px;
+}
+
+/* Vertikalūs langeliai (kairė ir dešinė) */
+.vertical-cell {
+    width: auto !important;
+    min-width: 115px;
+    max-width: 145px;
+    height: auto !important;
+    min-height: 75px;
+}
+
+/* Kampiniai langeliai */
+.corner {
+    width: auto !important;
+    min-width: 100px;
+    max-width: 130px;
+    height: auto !important;
+    min-height: 100px;
+}
+
+/* Langelio pavadinimas – automatinis teksto laužymas */
+.cell-name {
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.3 !important;
+    max-width: 100% !important;
+    font-size: 9px !important;
+}
+
+/* Ilgiems pavadinimams (pvz., "AUTOMOBILIŲ SERVISAS") */
+.cell.long-text .cell-name {
+    font-size: 7px !important;
+}
+
+.horizontal-cell.long-text {
+    min-width: 95px !important;
+    max-width: 110px !important;
+}
+
+.vertical-cell.long-text {
+    min-width: 125px !important;
+    max-width: 155px !important;
+}
+
+/* Specialių ikonų dydžiai */
+.wrench-icon, .plane-icon, .tax-icon, .chance-icon, 
+.devil-icon, .lightning-icon, .beer-icon, .water-icon, 
+.hospital-icon, .treasure-icon, .vacation-icon, .birthday-icon {
+    font-size: 22px !important;
+    margin: 2px 0 !important;
+}
+
+/* Horizontalių langelių ikonos */
+.horizontal-cell .wrench-icon,
+.horizontal-cell .plane-icon,
+.horizontal-cell .tax-icon,
+.horizontal-cell .chance-icon,
+.horizontal-cell .devil-icon,
+.horizontal-cell .lightning-icon,
+.horizontal-cell .beer-icon,
+.horizontal-cell .water-icon,
+.horizontal-cell .hospital-icon,
+.horizontal-cell .treasure-icon,
+.horizontal-cell .vacation-icon,
+.horizontal-cell .birthday-icon {
+    font-size: 20px !important;
+}
+
+/* Vertikalių langelių ikonos */
+.vertical-cell .wrench-icon,
+.vertical-cell .plane-icon,
+.vertical-cell .tax-icon,
+.vertical-cell .chance-icon,
+.vertical-cell .devil-icon,
+.vertical-cell .lightning-icon,
+.vertical-cell .beer-icon,
+.vertical-cell .water-icon,
+.vertical-cell .hospital-icon,
+.vertical-cell .treasure-icon,
+.vertical-cell .vacation-icon,
+.vertical-cell .birthday-icon {
+    font-size: 18px !important;
+}
+
+/* Kainos stilius */
+.cell-price {
+    white-space: nowrap !important;
+    font-size: 9px !important;
+}
+
+/* Jei ekranas mažesnis – pritaikome mažesnius dydžius */
+@media (max-width: 900px) {
+    .cell {
+        min-width: 55px;
+        max-width: 90px;
+        min-height: 80px;
+    }
+    .horizontal-cell {
+        min-width: 60px;
+        max-width: 85px;
+        min-height: 100px;
+    }
+    .vertical-cell {
+        min-width: 85px;
+        max-width: 110px;
+        min-height: 60px;
+    }
+    .corner {
+        min-width: 75px;
+        max-width: 100px;
+        min-height: 75px;
+    }
+    .cell-name {
+        font-size: 7px !important;
+    }
+    .cell.long-text .cell-name {
+        font-size: 6px !important;
+    }
+    .cell-price {
+        white-space: normal !important;
+        font-size: 7px !important;
+    }
+    .wrench-icon, .plane-icon, .tax-icon, .chance-icon, 
+    .devil-icon, .lightning-icon, .beer-icon, .water-icon, 
+    .hospital-icon, .treasure-icon, .vacation-icon, .birthday-icon {
+        font-size: 16px !important;
+    }
+}
+
+/* Jei labai mažas ekranas (telefonai) */
+@media (max-width: 600px) {
+    .cell {
+        min-width: 45px;
+        max-width: 70px;
+        min-height: 65px;
+        padding: 4px 2px;
+    }
+    .horizontal-cell {
+        min-width: 50px;
+        max-width: 65px;
+        min-height: 85px;
+    }
+    .vertical-cell {
+        min-width: 65px;
+        max-width: 85px;
+        min-height: 50px;
+    }
+    .corner {
+        min-width: 60px;
+        max-width: 80px;
+        min-height: 60px;
+    }
+    .cell-name {
+        font-size: 6px !important;
+    }
+    .cell.long-text .cell-name {
+        font-size: 5px !important;
+    }
+}
+/* ========== TOAST PRANEŠIMŲ PATAISYMAS – KAD NETILPTŲ UŽ EKRANO ========== */
+
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    color: #ffd700;
+    padding: 12px 20px;
+    border-radius: 50px;
+    border: 2px solid #ffd700;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 10001;
+    animation: slideDown 0.3s ease, fadeOut 0.5s ease 3s forwards;
+    pointer-events: none;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    white-space: normal;
+    word-break: break-word;
+    max-width: 90vw;
+    width: auto;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.toast-notification.success {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-color: #ffd700;
+}
+
+.toast-notification.error {
+    background: linear-gradient(135deg, #8b0000, #6b0000);
+    border-color: #ffd700;
+}
+
+.toast-notification.warning {
+    background: linear-gradient(135deg, #ff9800, #e68a00);
+    border-color: #ffd700;
+    color: #8b0000;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* Mažiems ekranams */
+@media (max-width: 600px) {
+    .toast-notification {
+        font-size: 11px;
+        padding: 8px 15px;
+        max-width: 95vw;
+        top: 10px;
+    }
+}
+
+/* Jei labai ilga žinutė */
+.toast-notification.long-message {
+    font-size: 12px;
+    padding: 10px 15px;
+    max-width: 85vw;
+    border-radius: 20px;
+}
+/* ========== BANKROTO PRANEŠIMAS (DIDELIS RAUDONAS) ========== */
+.bankrupt-announcement {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #8b0000, #4a0000);
+    border: 4px solid #ffd700;
+    border-radius: 30px;
+    padding: 30px 50px;
+    text-align: center;
+    z-index: 20000;
+    animation: bankruptPopIn 0.5s ease-out;
+    box-shadow: 0 0 50px rgba(255, 0, 0, 0.8);
+    min-width: 400px;
+}
+
+.bankrupt-announcement-content {
+    text-align: center;
+}
+
+.bankrupt-icon {
+    font-size: 80px;
+    animation: bankruptShake 0.5s ease-in-out infinite;
+    margin-bottom: 15px;
+}
+
+.bankrupt-player {
+    font-size: 32px;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 2px 2px 0 #8b0000;
+    margin-bottom: 10px;
+}
+
+.bankrupt-text {
+    font-size: 48px;
+    font-weight: bold;
+    color: #ff0000;
+    text-shadow: 3px 3px 0 #ffd700;
+    letter-spacing: 5px;
+    margin-bottom: 10px;
+}
+
+.bankrupt-subtext {
+    font-size: 18px;
+    color: #ffaa00;
+    font-style: italic;
+}
+
+@keyframes bankruptPopIn {
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 0;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes bankruptShake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(10deg); }
+    75% { transform: rotate(-10deg); }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* ========== BANKRUTAVUSIO ŽAIDĖJO KORTELĖ ========== */
+.player-card.bankrupt-card {
+    background: #4a0000;
+    border-color: #ff0000;
+    opacity: 0.8;
+    filter: grayscale(0.3);
+}
+
+.player-card.bankrupt-card .player-name {
+    color: #ff6666;
+}
+
+.player-card.bankrupt-card .player-figure {
+    filter: grayscale(1);
+    opacity: 0.6;
+}
+
+/* ========== BANKRUTAVUSIO ŽAIDĖJO TOKENAS LENTOJE ========== */
+.player-token.bankrupt-token {
+    filter: grayscale(1);
+    opacity: 0.4;
+    text-decoration: line-through;
+}
+/* ========== SPECIALIŲ LANGELIŲ IKONŲ DYDŽIO GRĄŽINIMAS ========== */
+
+/* Grąžiname originalų ikonų dydį */
+.wrench-icon,
+.plane-icon,
+.tax-icon,
+.chance-icon,
+.devil-icon,
+.lightning-icon,
+.beer-icon,
+.water-icon,
+.hospital-icon,
+.treasure-icon,
+.vacation-icon,
+.birthday-icon {
+    font-size: 32px !important;
+}
+
+/* Horizontalūs langeliai (viršus/apačia) */
+.horizontal-cell .wrench-icon,
+.horizontal-cell .plane-icon,
+.horizontal-cell .tax-icon,
+.horizontal-cell .chance-icon,
+.horizontal-cell .devil-icon,
+.horizontal-cell .lightning-icon,
+.horizontal-cell .beer-icon,
+.horizontal-cell .water-icon,
+.horizontal-cell .hospital-icon,
+.horizontal-cell .treasure-icon,
+.horizontal-cell .vacation-icon,
+.horizontal-cell .birthday-icon {
+    font-size: 28px !important;
+}
+
+/* Vertikalūs langeliai (kairė/dešinė) */
+.vertical-cell .wrench-icon,
+.vertical-cell .plane-icon,
+.vertical-cell .tax-icon,
+.vertical-cell .chance-icon,
+.vertical-cell .devil-icon,
+.vertical-cell .lightning-icon,
+.vertical-cell .beer-icon,
+.vertical-cell .water-icon,
+.vertical-cell .hospital-icon,
+.vertical-cell .treasure-icon,
+.vertical-cell .vacation-icon,
+.vertical-cell .birthday-icon {
+    font-size: 24px !important;
+}
+
+/* Specialiai AUTO SERVISUI (wrench kryželiai) */
+.wrench-cross-left,
+.wrench-cross-right {
+    font-size: 28px !important;
+}
+
+.horizontal-cell .wrench-cross-left,
+.horizontal-cell .wrench-cross-right {
+    font-size: 24px !important;
+}
+
+.vertical-cell .wrench-cross-left,
+.vertical-cell .wrench-cross-right {
+    font-size: 20px !important;
+}
+
+/* Mažiems ekranams – šiek tiek mažiau, bet ne per daug */
+@media (max-width: 900px) {
+    .wrench-icon,
+    .plane-icon,
+    .tax-icon,
+    .chance-icon,
+    .devil-icon,
+    .lightning-icon,
+    .beer-icon,
+    .water-icon,
+    .hospital-icon,
+    .treasure-icon,
+    .vacation-icon,
+    .birthday-icon {
+        font-size: 24px !important;
+    }
+}

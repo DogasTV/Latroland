@@ -1,0 +1,577 @@
+/* ========== CENTRO IŠDĖSTYMAS - TRYS STULPELIAI ========== */
+.board-center {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 15px;
+    width: 100%;
+    min-width: 750px;
+    flex-wrap: nowrap;
+    background: radial-gradient(circle, #3c9e3c, #1e5a1e);
+    border-radius: 20px;
+    padding: 15px;
+    margin: 0;
+}
+
+/* KAIRĖ PANELĖ - Žaidėjo kortelė */
+.center-left-panel {
+    width: 280px;
+    min-width: 280px;
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border-radius: 15px;
+    padding: 15px;
+    border: 2px solid #ffd700;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.center-player-card-placeholder {
+    text-align: center;
+}
+
+.center-player-figure {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.center-player-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 5px;
+}
+
+.center-player-money {
+    font-size: 14px;
+    color: #90EE90;
+    margin-bottom: 10px;
+}
+
+.center-player-position {
+    font-size: 12px;
+    color: #ddd;
+    margin-bottom: 10px;
+}
+
+.center-player-properties {
+    font-size: 11px;
+    color: #ccc;
+    max-height: 100px;
+    overflow-y: auto;
+    margin-top: 5px;
+    padding: 5px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    text-align: left;
+}
+
+.center-player-wealth {
+    font-size: 12px;
+    color: #ffd700;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid #4caf50;
+}
+
+.center-player-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.center-player-buttons button {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    border-radius: 20px;
+    padding: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.center-player-buttons button:hover {
+    transform: scale(1.02);
+    background: #ffaa00;
+}
+
+/* VIDURINĖ PANELĖ - Kauliukai ir info */
+.center-middle-panel {
+    flex: 1;
+    min-width: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* DEŠINĖ PANELĖ - VŽ ir CHAT */
+.center-right-panel {
+    width: 320px;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* KAULIUKAI */
+.center-dice-container {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 10px;
+}
+
+.center-dice {
+    width: 85px;
+    height: 85px;
+    background: linear-gradient(145deg, #ffffff, #e0e0e0);
+    border-radius: 14px;
+    box-shadow: 0 8px 0 rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.3), inset 0 1px 2px rgba(255,255,255,0.8);
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.center-dice::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0));
+    border-radius: 14px 14px 0 0;
+    pointer-events: none;
+}
+
+.center-dice::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20%;
+    background: linear-gradient(to top, rgba(0,0,0,0.1), rgba(0,0,0,0));
+    border-radius: 0 0 14px 14px;
+    pointer-events: none;
+}
+
+.center-dice:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.2), 0 15px 25px rgba(0,0,0,0.3);
+}
+
+.dice-dots-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.dice-dot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #1a1a2e;
+    border-radius: 50%;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.6);
+    display: none;
+}
+
+.dice-dot.visible {
+    display: block;
+}
+
+.dot-tl { top: 18px; left: 18px; }
+.dot-tc { top: 18px; left: 50%; transform: translateX(-50%); }
+.dot-tr { top: 18px; right: 18px; }
+.dot-cl { top: 50%; left: 18px; transform: translateY(-50%); }
+.dot-cc { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.dot-cr { top: 50%; right: 18px; transform: translateY(-50%); }
+.dot-bl { bottom: 18px; left: 18px; }
+.dot-bc { bottom: 18px; left: 50%; transform: translateX(-50%); }
+.dot-br { bottom: 18px; right: 18px; }
+
+.center-dice.rolling {
+    animation: diceRoll 0.3s ease-in-out;
+}
+
+@keyframes diceRoll {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(12deg) scale(1.1); }
+    50% { transform: rotate(-12deg) scale(1.1); }
+    75% { transform: rotate(6deg) scale(1.05); }
+    100% { transform: rotate(0deg) scale(1); }
+}
+
+/* INFORMACIJA */
+.center-info {
+    background: rgba(0,0,0,0.75);
+    padding: 10px 15px;
+    border-radius: 20px;
+    margin: 5px 0;
+    text-align: center;
+    width: 90%;
+}
+
+.info-row {
+    color: #ffd700;
+    font-size: 13px;
+    font-weight: bold;
+    margin: 4px 0;
+}
+
+.info-row span {
+    color: #ffaa00;
+    font-size: 16px;
+    background: #1a3a1a;
+    padding: 2px 8px;
+    border-radius: 15px;
+    margin-left: 8px;
+}
+
+/* MYGTUKAI */
+.roll-button-container {
+    margin-top: 5px;
+}
+
+.roll-button {
+    background: #ffd700;
+    color: #8b0000;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 40px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #b8860b;
+    transition: 0.1s linear;
+    width: 100%;
+}
+
+.roll-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #b8860b;
+}
+
+/* VŽ PANELĖ */
+.center-log-panel {
+    background: #0d2b0d;
+    border-radius: 10px;
+    border: 1px solid #ffd700;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.center-log-header {
+    background: #1b4d1b;
+    color: #ffd700;
+    padding: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #ffd700;
+}
+
+.center-log-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 5px;
+    font-size: 10px;
+    color: #ddd;
+}
+
+.center-log-list .log-entry {
+    padding: 3px;
+    border-bottom: 1px solid #2e7d32;
+}
+
+/* CHAT PANELĖ */
+.center-chat-panel {
+    background: #0d2b0d;
+    border-radius: 10px;
+    border: 1px solid #ffd700;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.center-chat-header {
+    background: #1b4d1b;
+    color: #ffd700;
+    padding: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #ffd700;
+}
+
+.center-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 5px;
+    font-size: 11px;
+}
+
+.center-chat-messages .chat-message {
+    padding: 4px 8px;
+    margin-bottom: 4px;
+    border-radius: 10px;
+}
+
+.center-chat-messages .chat-message.player {
+    background: #2e7d32;
+    color: #ffd700;
+}
+
+.center-chat-messages .chat-message.system {
+    background: #8b0000;
+    color: #ffd700;
+    text-align: center;
+    font-size: 10px;
+}
+
+.center-chat-emoji-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 5px;
+    background: #0d2b0d;
+    border-top: 1px solid #2e7d32;
+}
+
+.center-chat-emoji-bar button {
+    background: #2e7d32;
+    color: #ffd700;
+    border: 1px solid #ffd700;
+    border-radius: 15px;
+    padding: 2px 6px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.center-chat-emoji-bar button:hover {
+    background: #4caf50;
+    transform: scale(1.05);
+}
+
+.center-chat-input-container {
+    display: flex;
+    padding: 5px;
+    gap: 5px;
+    border-top: 1px solid #4caf50;
+    background: #0d2b0d;
+}
+
+.center-chat-input {
+    flex: 1;
+    padding: 5px 8px;
+    border: 1px solid #ffd700;
+    border-radius: 15px;
+    background: #1b4d1b;
+    color: #ffd700;
+    font-size: 11px;
+    outline: none;
+}
+
+.center-chat-input::placeholder {
+    color: #8bc34a;
+}
+
+.center-chat-send-btn {
+    background: #ffd700;
+    color: #8b0000;
+    border: none;
+    border-radius: 15px;
+    padding: 5px 10px;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.center-chat-send-btn:hover {
+    background: #ffaa00;
+    transform: scale(1.02);
+}
+
+/* ========== KITI ŽAIDĖJAI ========== */
+#playersListContainer {
+    margin-top: 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.players-list-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffd700;
+    text-align: center;
+    margin: 10px 0 5px 0;
+    padding-top: 10px;
+    border-top: 1px solid #4caf50;
+}
+
+.players-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    overflow-y: auto;
+    max-height: none;
+}
+
+.player-list-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.player-list-item.player-active {
+    background: #2e7d32;
+    border-left: 3px solid #ffd700;
+}
+
+.player-list-item.player-inactive {
+    background: #555;
+    opacity: 0.6;
+    filter: grayscale(0.5);
+}
+
+.player-list-item:hover {
+    transform: translateX(3px);
+    background: #4caf50;
+}
+
+.player-list-figure {
+    font-size: 24px;
+    width: 36px;
+    text-align: center;
+}
+
+.player-list-name {
+    flex: 1;
+    font-size: 12px;
+    color: #ffd700;
+}
+
+.player-list-money {
+    font-size: 11px;
+    color: #90EE90;
+}
+
+/* ========== HOVER KORTELĖ ========== */
+.player-hover-card {
+    position: fixed;
+    width: 240px;
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    border: 2px solid #ffd700;
+    border-radius: 12px;
+    padding: 12px;
+    z-index: 10001;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    animation: fadeIn 0.2s ease;
+}
+
+.player-hover-content {
+    text-align: center;
+}
+
+.player-hover-figure {
+    font-size: 40px;
+    margin-bottom: 5px;
+}
+
+.player-hover-name {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 5px;
+}
+
+.player-hover-money {
+    font-size: 13px;
+    color: #90EE90;
+    margin-bottom: 3px;
+}
+
+.player-hover-position {
+    font-size: 12px;
+    color: #ddd;
+    margin-bottom: 3px;
+}
+
+.player-hover-wealth {
+    font-size: 12px;
+    color: #ffaa00;
+    margin-bottom: 8px;
+}
+
+.player-hover-properties {
+    font-size: 11px;
+    color: #ccc;
+    text-align: left;
+    max-height: 120px;
+    overflow-y: auto;
+    padding: 5px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+}
+
+.player-hover-properties-title {
+    font-weight: bold;
+    color: #ffd700;
+    margin-bottom: 3px;
+}
+
+/* ATSAKOMASIS EKRANAS */
+@media (max-width: 900px) {
+    .board-center {
+        flex-direction: column;
+        min-width: auto;
+    }
+    .center-left-panel, .center-right-panel {
+        width: 100%;
+    }
+    .center-dice {
+        width: 65px;
+        height: 65px;
+    }
+    .dice-dot {
+        width: 10px;
+        height: 10px;
+    }
+    .dot-tl, .dot-tr, .dot-bl, .dot-br { top: 12px; left: 12px; right: 12px; bottom: 12px; }
+    .dot-cl, .dot-cr { left: 12px; right: 12px; }
+    .center-info { 
+        padding: 6px 10px;
+        width: 85%;
+    }
+    .info-row { 
+        font-size: 11px; 
+    }
+    .info-row span { 
+        font-size: 13px; 
+        padding: 2px 5px;
+    }
+    .roll-button {
+        font-size: 15px;
+        padding: 8px 18px;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
