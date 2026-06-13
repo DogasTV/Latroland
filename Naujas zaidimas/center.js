@@ -10,17 +10,12 @@ function updateCenterPlayerCard() {
         return;
     }
     
-    if (!currentPlayer) {
-        console.log('Nėra einamojo žaidėjo');
-        return;
-    }
-    
-    console.log('Atnaujinama žaidėjo kortelė:', currentPlayer.name);
+    console.log('Atnaujinama žaidėjo kortelė:', currentPlayer?.name || 'Nežinomas');
     
     let propertiesHtml = '<div class="player-properties-title">🏠 Nuosavybės:</div>';
     propertiesHtml += '<div class="properties-mini-grid">';
     
-    if (currentPlayer.properties && currentPlayer.properties.length > 0) {
+    if (currentPlayer && currentPlayer.properties && currentPlayer.properties.length > 0) {
         const sortedProperties = sortPropertiesByPriceAndColor(currentPlayer.properties, currentPlayer);
         sortedProperties.forEach(prop => {
             const cellData = getCellById(prop.id);
@@ -60,8 +55,8 @@ function updateCenterPlayerCard() {
     }
     propertiesHtml += '</div>';
     
-    let totalWealth = currentPlayer.money;
-    if (currentPlayer.properties) {
+    let totalWealth = currentPlayer ? currentPlayer.money : 0;
+    if (currentPlayer && currentPlayer.properties) {
         currentPlayer.properties.forEach(prop => {
             const cellData = getCellById(prop.id);
             if (cellData) {
@@ -74,10 +69,10 @@ function updateCenterPlayerCard() {
     
     leftPanel.innerHTML = `
         <div class="center-player-card-placeholder">
-            <div class="center-player-figure">${currentPlayer.figure}</div>
-            <div class="center-player-name">${currentPlayer.name} (${currentPlayer.figureName})</div>
-            <div class="center-player-money">💰 ${currentPlayer.money}€</div>
-            <div class="center-player-position">📍 Pozicija: ${currentPlayer.position}</div>
+            <div class="center-player-figure">${currentPlayer?.figure || '🚗'}</div>
+            <div class="center-player-name">${currentPlayer?.name || 'Žaidėjas'} (${currentPlayer?.figureName || 'Automobilis'})</div>
+            <div class="center-player-money">💰 ${currentPlayer?.money || 1500}€</div>
+            <div class="center-player-position">📍 Pozicija: ${currentPlayer?.position || 1}</div>
             <div class="center-player-properties">
                 <div class="player-properties-title">🏠 Nuosavybės:</div>
                 ${propertiesHtml}
@@ -96,39 +91,9 @@ function updateCenterPlayerCard() {
     const sellBtn = leftPanel.querySelector('.center-sell-btn');
     const destroyBtn = leftPanel.querySelector('.center-destroy-btn');
     
-    // ========== PATAISYTA: Mygtukai naudoja einamąjį žaidėją ==========
-    if (pledgeBtn) {
-        pledgeBtn.onclick = () => {
-            const currentPlayerForAction = players[currentPlayerIndex];
-            if (currentPlayerForAction && typeof openPledgeModal === 'function') {
-                openPledgeModal(currentPlayerForAction);
-            } else {
-                showToast('Įkeitimo sistema dar neįkelta', 'error');
-            }
-        };
-    }
-    
-    if (sellBtn) {
-        sellBtn.onclick = () => {
-            const currentPlayerForAction = players[currentPlayerIndex];
-            if (currentPlayerForAction && typeof openSellOptionsModal === 'function') {
-                openSellOptionsModal(currentPlayerForAction);
-            } else {
-                showToast('Prekybos sistema dar neįkelta', 'error');
-            }
-        };
-    }
-    
-    if (destroyBtn) {
-        destroyBtn.onclick = () => {
-            const currentPlayerForAction = players[currentPlayerIndex];
-            if (currentPlayerForAction && typeof openDestroyHousesModal === 'function') {
-                openDestroyHousesModal(currentPlayerForAction);
-            } else {
-                showToast('Griovimo sistema dar neįkelta', 'error');
-            }
-        };
-    }
+    if (pledgeBtn) pledgeBtn.onclick = () => openPledgeModal?.(currentPlayer);
+    if (sellBtn) sellBtn.onclick = () => openSellOptionsModal?.(currentPlayer);
+    if (destroyBtn) destroyBtn.onclick = () => openDestroyHousesModal?.(currentPlayer);
     
     updatePlayersList();
 }
@@ -137,24 +102,31 @@ function updatePlayersList() {
     const container = document.getElementById('playersListContainer');
     if (!container) return;
     
+    const localPlayerId = typeof getLocalPlayerId === 'function' ? getLocalPlayerId() : -1;
+    
     let html = '<div class="players-list-title">👥 KITI ŽAIDĖJAI</div>';
     html += '<div class="players-list">';
     
     for (let i = 0; i < players.length; i++) {
         const player = players[i];
         if (!player) continue;
-        if (player.id === currentPlayerIndex) continue;
         
-        const isActive = !player.bankrupt;
-        const activeClass = isActive ? 'player-active' : 'player-inactive';
+        // Praleidžiame save
+        if (player.id === localPlayerId) continue;
+        
+        const isBankrupt = player.bankrupt === true;
         
         html += `
-            <div class="player-list-item ${activeClass}" data-player-id="${player.id}" data-player-name="${player.name}" data-player-figure="${player.figure}" data-player-money="${player.money}" data-player-position="${player.position}" data-player-figurename="${player.figureName}">
+            <div class="player-list-item ${isBankrupt ? 'bankrupt-player' : ''}" data-player-id="${player.id}" data-player-name="${player.name}" data-player-figure="${player.figure}" data-player-money="${player.money}" data-player-position="${player.position}" data-player-figurename="${player.figureName}">
                 <div class="player-list-figure">${player.figure}</div>
                 <div class="player-list-name">${player.name}</div>
-                <div class="player-list-money">💰 ${player.money}€</div>
+                <div class="player-list-money">${isBankrupt ? '💀 BANKRUTAVĘS' : `💰 ${player.money}€`}</div>
             </div>
         `;
+    }
+    
+    if (html === '<div class="players-list-title">👥 KITI ŽAIDĖJAI</div><div class="players-list"></div>') {
+        html = '<div class="players-list-title">👥 KITI ŽAIDĖJAI</div><div class="players-list"><div class="no-other-players">🚫 Nėra kitų žaidėjų</div></div>';
     }
     
     html += '</div>';
