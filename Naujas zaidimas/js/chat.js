@@ -11,8 +11,97 @@ let chatResizeStartWidth = 0, chatResizeStartHeight = 0;
 let chatResizeStartLeft = 0, chatResizeStartTop = 0;
 let chatResizeCorner = '';
 
-// Emocijų sąrašas
 const emojis = ['😊', '🎲', '🏆', '💀', '🔥', '🎉', '😂', '😭', '🍺', '🚀', '💩', '👑', '🤡', '🥇', '🤬', '💀', '👻', '🎃', '💎', '💰'];
+
+// ========== CHATO SINCHRONIZACIJA SU FIREBASE ==========
+
+function getLocalChatPlayer() {
+    if (!window.gameId) return null;
+    const savedPlayer = localStorage.getItem(`player_${window.gameId}`);
+    if (savedPlayer && players && players.length > 0) {
+        for (let i = 0; i < players.length; i++) {
+            if (players[i] && players[i].name === savedPlayer) {
+                return players[i];
+            }
+        }
+    }
+    const savedPlayerId = localStorage.getItem(`playerId_${window.gameId}`);
+    if (savedPlayerId !== null && players && players[savedPlayerId]) {
+        return players[parseInt(savedPlayerId)];
+    }
+    return players[currentPlayerIndex] || null;
+}
+
+function sendChatMessageToFirebase(message, playerName, playerFigure) {
+    if (!window.gameId || !window.database) return;
+    
+    const chatRef = window.database.ref('games/' + window.gameId + '/chatMessages');
+    const newMessage = {
+        message: message,
+        playerName: playerName,
+        playerFigure: playerFigure,
+        timestamp: Date.now(),
+        playerId: getLocalPlayerId()
+    };
+    
+    chatRef.push(newMessage);
+    
+    // Išvalome senas žinutes (paliekame paskutines 200)
+    chatRef.limitToLast(200).once('value', (snapshot) => {
+        const messages = snapshot.val();
+        if (messages) {
+            const keys = Object.keys(messages);
+            if (keys.length > 200) {
+                const keysToRemove = keys.slice(0, keys.length - 200);
+                keysToRemove.forEach(key => {
+                    chatRef.child(key).remove();
+                });
+            }
+        }
+    });
+}
+
+function listenForChatMessages() {
+    if (!window.gameId || !window.database) return;
+    
+    const chatRef = window.database.ref('games/' + window.gameId + '/chatMessages');
+    
+    chatRef.on('child_added', (snapshot) => {
+        const msg = snapshot.val();
+        if (msg) {
+            // Patikriname ar ne mūsų pačių žinutė (kad nesidubliuotų)
+            const localPlayerId = getLocalPlayerId();
+            if (localPlayerId !== -1 && msg.playerId === localPlayerId) return;
+            
+            addChatMessageToUI(msg.message, false, msg.playerName, msg.playerFigure);
+        }
+    });
+}
+
+function addChatMessageToUI(message, isSystem = false, playerName = null, playerFigure = null) {
+    const chatMessagesDiv = document.getElementById('chatMessagesList');
+    if (!chatMessagesDiv) return;
+    
+    const messageEntry = document.createElement('div');
+    messageEntry.className = `chat-message ${isSystem ? 'system' : 'player'}`;
+    
+    if (isSystem) {
+        messageEntry.innerHTML = `📢 ${message}`;
+    } else {
+        messageEntry.innerHTML = `<strong style="color:#ffaa00;">${playerFigure || '👤'} ${playerName || 'Žaidėjas'}:</strong> ${message}`;
+    }
+    
+    chatMessagesDiv.appendChild(messageEntry);
+    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+    chatMessages.push({ message, isSystem, playerName, timestamp: Date.now() });
+    
+    while (chatMessagesDiv.children.length > 200) {
+        chatMessagesDiv.removeChild(chatMessagesDiv.firstChild);
+        chatMessages.shift();
+    }
+}
+
+// ========== CHATO FUNKCIJOS ==========
 
 function loadChatPosition() {
     const saved = localStorage.getItem('chatPosition');
@@ -235,37 +324,23 @@ function initChatDrag() {
     window.addEventListener('mouseup', stopChatResize);
 }
 
-function addChatMessage(message, isSystem = false, playerName = null, playerFigure = null) {
-    const chatMessagesDiv = document.getElementById('chatMessagesList');
-    if (!chatMessagesDiv) return;
-    
-    const messageEntry = document.createElement('div');
-    messageEntry.className = `chat-message ${isSystem ? 'system' : 'player'}`;
-    
-    if (isSystem) {
-        messageEntry.innerHTML = `📢 ${message}`;
-    } else {
-        // VIENOJE EILUTĖJE: "🚗 Žaidėjas 1: žinutė"
-        messageEntry.innerHTML = `<strong style="color:#ffaa00;">${playerFigure || '👤'} ${playerName || 'Žaidėjas'}:</strong> ${message}`;
-    }
-    
-    chatMessagesDiv.appendChild(messageEntry);
-    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-    chatMessages.push({ message, isSystem, playerName, timestamp: Date.now() });
-    
-    while (chatMessagesDiv.children.length > 200) {
-        chatMessagesDiv.removeChild(chatMessagesDiv.firstChild);
-        chatMessages.shift();
-    }
-}
-
+// ========== PATAISYTA: SIUNČIA SAVO ŽAIDĖJO VARDU ==========
 function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const message = input.value.trim();
     if (message === '') return;
     
-    const currentPlayer = players[currentPlayerIndex];
-    addChatMessage(message, false, currentPlayer.name, currentPlayer.figure);
+    const localPlayer = getLocalChatPlayer();
+    if (!localPlayer) {
+        showToast('Klaida: nepavyko nustatyti žaidėjo', 'error');
+        return;
+    }
+    
+    // Pridedame žinutę į UI
+    addChatMessageToUI(message, false, localPlayer.name, localPlayer.figure);
+    
+    // Siunčiame į Firebase
+    sendChatMessageToFirebase(message, localPlayer.name, localPlayer.figure);
     
     input.value = '';
 }
@@ -302,7 +377,6 @@ function initChat() {
         });
     }
     
-    // Sukurti emocijų mygtukus
     const emojiContainer = document.getElementById('chatEmojis');
     if (emojiContainer) {
         emojis.forEach(emoji => {
@@ -314,10 +388,14 @@ function initChat() {
         });
     }
     
-    addChatMessage('Pokalbio pradžia! Visi žaidėjai gali bendrauti.', true);
+    addChatMessageToUI('Pokalbio pradžia! Visi žaidėjai gali bendrauti.', true);
+    
+    // Paleidžiame klausymąsi Firebase
+    setTimeout(() => {
+        listenForChatMessages();
+    }, 1000);
 }
 
-// Inicijuoti chatą kai DOM užsikrauna
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initChat);
 } else {

@@ -266,6 +266,52 @@ function clearTradeOffer() {
     window.database.ref('games/' + window.gameId + '/pendingTrade').remove();
 }
 
+// ==================== CHATO SINCHRONIZACIJA ====================
+
+function sendChatMessageToFirebase(message, playerName, playerFigure) {
+    if (!window.gameId || !window.database) return;
+    
+    const chatRef = window.database.ref('games/' + window.gameId + '/chatMessages');
+    const localPlayerId = getLocalPlayerIdForTrade();
+    
+    chatRef.push({
+        message: message,
+        playerName: playerName,
+        playerFigure: playerFigure,
+        timestamp: Date.now(),
+        playerId: localPlayerId
+    });
+    
+    // Išvalome senas žinutes (paliekame paskutines 200)
+    chatRef.limitToLast(200).once('value', (snapshot) => {
+        const messages = snapshot.val();
+        if (messages) {
+            const keys = Object.keys(messages);
+            if (keys.length > 200) {
+                const keysToRemove = keys.slice(0, keys.length - 200);
+                keysToRemove.forEach(key => {
+                    chatRef.child(key).remove();
+                });
+            }
+        }
+    });
+}
+
+function listenForChatMessages() {
+    if (!window.gameId || !window.database) return;
+    
+    const chatRef = window.database.ref('games/' + window.gameId + '/chatMessages');
+    
+    chatRef.on('child_added', (snapshot) => {
+        const msg = snapshot.val();
+        if (msg && typeof addChatMessageToUI === 'function') {
+            const localPlayerId = getLocalPlayerIdForTrade();
+            if (localPlayerId !== -1 && msg.playerId === localPlayerId) return;
+            addChatMessageToUI(msg.message, false, msg.playerName, msg.playerFigure);
+        }
+    });
+}
+
 let syncInitialized = false;
 
 function initSync() {
@@ -290,6 +336,7 @@ function initSync() {
     
     listenRolls();
     setTimeout(() => { listenForTradeOffers(); }, 2000);
+    setTimeout(() => { listenForChatMessages(); }, 2000);
     
     console.log("🔄 Sinchronizacija pradėta");
 }
@@ -303,3 +350,5 @@ window.sendTradeOffer = sendTradeOffer;
 window.listenForTradeOffers = listenForTradeOffers;
 window.clearTradeOffer = clearTradeOffer;
 window.getLocalPlayerIdForTrade = getLocalPlayerIdForTrade;
+window.sendChatMessageToFirebase = sendChatMessageToFirebase;
+window.listenForChatMessages = listenForChatMessages;

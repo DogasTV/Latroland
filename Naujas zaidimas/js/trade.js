@@ -1,9 +1,22 @@
-// ==================== PREKYBOS SISTEMA ====================
+// ==================== PREKYBOS SISTEMA (SU APRIBOJIMAIS) ====================
 
 function openTradeMenu(senderId, receiverId) {
     console.log('🔓 openTradeMenu called for sender:', senderId, 'receiver:', receiverId);
     
     const sender = players[senderId];
+    
+    // ========== APRIBOJIMAI ==========
+    // 1. Ar sender nėra bankrutavęs?
+    if (sender.bankrupt) {
+        showToast('❌ Bankrutavęs žaidėjas negali prekiauti!', 'error');
+        return;
+    }
+    
+    // 2. Ar tai einamojo žaidėjo eilė?
+    if (sender.id !== currentPlayerIndex) {
+        showToast(`❌ Prekiauti galima tik savo eilėje! Dabar eina ${players[currentPlayerIndex]?.name}`, 'warning');
+        return;
+    }
     
     if (receiverId === undefined) {
         console.log("🏦 Prekyba su banku");
@@ -15,6 +28,12 @@ function openTradeMenu(senderId, receiverId) {
     if (!sender || !receiver) {
         console.error("Žaidėjas nerastas!");
         showToast("Klaida: žaidėjas nerastas", 'error');
+        return;
+    }
+    
+    // 3. Ar receiver nėra bankrutavęs?
+    if (receiver.bankrupt) {
+        showToast(`❌ ${receiver.name} yra bankrutavęs, su juo prekiauti negalima!`, 'error');
         return;
     }
     
@@ -149,6 +168,13 @@ function showPlayerTradeModal(sender, receiver) {
     updateTradePropertyList(modal, sender, 'senderOfferProps', 'sender');
     updateTradePropertyList(modal, receiver, 'receiverRequestProps', 'receiver');
     
+    // Patikriname ar nėra jau laukiančio pasiūlymo
+    if (window.pendingTradeOffer && window.pendingTradeOffer.fromPlayerId === sender.id) {
+        showToast(`⚠️ Jau turite laukiantį prekybos pasiūlymą! Palaukite atsakymo.`, 'warning');
+        modal.remove();
+        return;
+    }
+    
     modal.querySelector('#tradeSendBtn').addEventListener('click', () => {
         const senderOfferMoney = parseInt(modal.querySelector('#senderOfferMoney').value) || 0;
         const receiverRequestMoney = parseInt(modal.querySelector('#receiverRequestMoney').value) || 0;
@@ -194,10 +220,19 @@ function showPlayerTradeModal(sender, receiver) {
             status: 'pending'
         };
         
+        window.pendingTradeOffer = tradeOffer;
+        
         if (window.gameId && window.database) {
             window.sendTradeOffer(tradeOffer);
             addLog(`📨 ${sender.name} išsiuntė prekybos pasiūlymą ${receiver.name}. Laukiama atsakymo...`);
             showToast(`✅ Pasiūlymas išsiųstas ${receiver.name}! Laukiama atsakymo.`, 'success');
+            
+            setTimeout(() => {
+                if (window.pendingTradeOffer && window.pendingTradeOffer.fromPlayerId === sender.id) {
+                    window.pendingTradeOffer = null;
+                    window.clearTradeOffer();
+                }
+            }, 60000);
         } else {
             showTradeProposalToReceiver(sender, receiver, senderSelectedProps, receiverSelectedProps, senderOfferMoney, receiverRequestMoney);
         }
@@ -248,6 +283,7 @@ function showTradeProposalToReceiver(sender, receiver, senderProps, receiverProp
         if (window.gameId && window.database) {
             window.database.ref('games/' + window.gameId + '/pendingTrade').remove();
         }
+        window.pendingTradeOffer = null;
         modal.remove();
         executeTrade(sender, receiver, senderProps, receiverProps, senderMoney, receiverMoney);
         addLog(`✅ ${receiver.name} priėmė ${sender.name} prekybos pasiūlymą!`);
@@ -264,6 +300,7 @@ function showTradeProposalToReceiver(sender, receiver, senderProps, receiverProp
         if (window.gameId && window.database) {
             window.database.ref('games/' + window.gameId + '/pendingTrade').remove();
         }
+        window.pendingTradeOffer = null;
         modal.remove();
         addLog(`❌ ${receiver.name} atmetė ${sender.name} prekybos pasiūlymą.`);
         showToast(`❌ Atmetėte pasiūlymą.`, 'warning');

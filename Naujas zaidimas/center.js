@@ -10,12 +10,17 @@ function updateCenterPlayerCard() {
         return;
     }
     
-    console.log('Atnaujinama žaidėjo kortelė:', currentPlayer?.name || 'Nežinomas');
+    if (!currentPlayer) {
+        console.log('Nėra einamojo žaidėjo');
+        return;
+    }
+    
+    console.log('Atnaujinama žaidėjo kortelė:', currentPlayer.name);
     
     let propertiesHtml = '<div class="player-properties-title">🏠 Nuosavybės:</div>';
     propertiesHtml += '<div class="properties-mini-grid">';
     
-    if (currentPlayer && currentPlayer.properties && currentPlayer.properties.length > 0) {
+    if (currentPlayer.properties && currentPlayer.properties.length > 0) {
         const sortedProperties = sortPropertiesByPriceAndColor(currentPlayer.properties, currentPlayer);
         sortedProperties.forEach(prop => {
             const cellData = getCellById(prop.id);
@@ -55,8 +60,8 @@ function updateCenterPlayerCard() {
     }
     propertiesHtml += '</div>';
     
-    let totalWealth = currentPlayer ? currentPlayer.money : 0;
-    if (currentPlayer && currentPlayer.properties) {
+    let totalWealth = currentPlayer.money;
+    if (currentPlayer.properties) {
         currentPlayer.properties.forEach(prop => {
             const cellData = getCellById(prop.id);
             if (cellData) {
@@ -69,10 +74,10 @@ function updateCenterPlayerCard() {
     
     leftPanel.innerHTML = `
         <div class="center-player-card-placeholder">
-            <div class="center-player-figure">${currentPlayer?.figure || '🚗'}</div>
-            <div class="center-player-name">${currentPlayer?.name || 'Žaidėjas'} (${currentPlayer?.figureName || 'Automobilis'})</div>
-            <div class="center-player-money">💰 ${currentPlayer?.money || 1500}€</div>
-            <div class="center-player-position">📍 Pozicija: ${currentPlayer?.position || 1}</div>
+            <div class="center-player-figure">${currentPlayer.figure}</div>
+            <div class="center-player-name">${currentPlayer.name} (${currentPlayer.figureName})</div>
+            <div class="center-player-money">💰 ${currentPlayer.money}€</div>
+            <div class="center-player-position">📍 Pozicija: ${currentPlayer.position}</div>
             <div class="center-player-properties">
                 <div class="player-properties-title">🏠 Nuosavybės:</div>
                 ${propertiesHtml}
@@ -91,9 +96,39 @@ function updateCenterPlayerCard() {
     const sellBtn = leftPanel.querySelector('.center-sell-btn');
     const destroyBtn = leftPanel.querySelector('.center-destroy-btn');
     
-    if (pledgeBtn) pledgeBtn.onclick = () => openPledgeModal?.(currentPlayer);
-    if (sellBtn) sellBtn.onclick = () => openSellOptionsModal?.(currentPlayer);
-    if (destroyBtn) destroyBtn.onclick = () => openDestroyHousesModal?.(currentPlayer);
+    // ========== PATAISYTA: Mygtukai naudoja einamąjį žaidėją ==========
+    if (pledgeBtn) {
+        pledgeBtn.onclick = () => {
+            const currentPlayerForAction = players[currentPlayerIndex];
+            if (currentPlayerForAction && typeof openPledgeModal === 'function') {
+                openPledgeModal(currentPlayerForAction);
+            } else {
+                showToast('Įkeitimo sistema dar neįkelta', 'error');
+            }
+        };
+    }
+    
+    if (sellBtn) {
+        sellBtn.onclick = () => {
+            const currentPlayerForAction = players[currentPlayerIndex];
+            if (currentPlayerForAction && typeof openSellOptionsModal === 'function') {
+                openSellOptionsModal(currentPlayerForAction);
+            } else {
+                showToast('Prekybos sistema dar neįkelta', 'error');
+            }
+        };
+    }
+    
+    if (destroyBtn) {
+        destroyBtn.onclick = () => {
+            const currentPlayerForAction = players[currentPlayerIndex];
+            if (currentPlayerForAction && typeof openDestroyHousesModal === 'function') {
+                openDestroyHousesModal(currentPlayerForAction);
+            } else {
+                showToast('Griovimo sistema dar neįkelta', 'error');
+            }
+        };
+    }
     
     updatePlayersList();
 }
@@ -273,12 +308,10 @@ function addCenterChatMessage(message, isSystem = false) {
     }
 }
 
-// ========== PAPILDOMOS FUNKCIJOS STALO INFO ==========
 function updateCenterStats() {
     const playerCountSpan = document.getElementById('playerCountDisplay');
     const gameCodeSpan = document.getElementById('gameCodeDisplayCenter');
     
-    // GAUNAME TIKRĄ ŽAIDĖJŲ SKAIČIŲ
     let currentPlayers = [];
     if (typeof players !== 'undefined' && players && players.length > 0) {
         currentPlayers = players;
@@ -286,7 +319,6 @@ function updateCenterStats() {
         currentPlayers = window.players;
     }
     
-    // GAUNAME MAKSIMALŲ ŽAIDĖJŲ SKAIČIŲ IŠ FIREBASE
     if (window.gameId && window.database) {
         window.database.ref('games/' + window.gameId).once('value').then(snapshot => {
             const game = snapshot.val();
@@ -304,12 +336,10 @@ function updateCenterStats() {
         }
     }
     
-    // Atnaujinti stalo kodą
     if (gameCodeSpan && window.gameId) {
         gameCodeSpan.innerText = window.gameId;
     }
     
-    // 🆕 Atnaujinti figūrėlę – kiekvienas žaidėjas mato savo
     const figureSpan = document.getElementById('playerFigureDisplay');
     if (figureSpan) {
         const savedPlayerName = localStorage.getItem(`player_${window.gameId}`);
@@ -322,20 +352,17 @@ function updateCenterStats() {
     }
 }
 
-// Perrašyti addLog funkciją
 const originalAddLog = window.addLog;
 window.addLog = function(message) {
     if (originalAddLog) originalAddLog(message);
     addCenterLog(message);
 };
 
-// Atnaujinti kortelę kai keičiasi žaidėjas
 const originalUpdateUI = window.updateUI;
 window.updateUI = function() {
     if (originalUpdateUI) originalUpdateUI();
     updateCenterPlayerCard();
     updateCenterStats();
-    // Atnaujiname žetonus (figūrėles)
     if (typeof updateAllPlayerTokens === 'function') {
         updateAllPlayerTokens();
     }
@@ -346,25 +373,21 @@ window.updatePlayersCards = function() {
     if (originalUpdatePlayersCards) originalUpdatePlayersCards();
     updateCenterPlayerCard();
     updateCenterStats();
-    // Atnaujiname žetonus (figūrėles)
     if (typeof updateAllPlayerTokens === 'function') {
         updateAllPlayerTokens();
     }
 };
 
-// Inicijuoti
 document.addEventListener('DOMContentLoaded', () => {
     console.log('center.js DOMContentLoaded');
     setTimeout(() => {
         updateCenterPlayerCard();
         initCenterChat();
         updateCenterStats();
-        // Pradžioje atnaujiname žetonus
         if (typeof updateAllPlayerTokens === 'function') {
             updateAllPlayerTokens();
         }
     }, 500);
 });
 
-// Periodiškai atnaujinti statistiką
 setInterval(updateCenterStats, 1000);
